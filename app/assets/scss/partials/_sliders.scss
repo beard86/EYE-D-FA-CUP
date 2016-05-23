@@ -52,6 +52,14 @@
 }
 #titles {
     padding-top:1%;
+    div[data-section="7" ] {
+            top: 66%;
+    }
+    div[data-section="8" ],
+    div[data-section="9" ],
+    div[data-section="10" ] {
+            top: 69.5%;
+    }
 }
 .swiper-container {
     position: absolute;

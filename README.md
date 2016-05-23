@@ -3,15 +3,12 @@ HTML5 / GULP / $
 
 HTML5/JQuery &amp; Gulp and other js to support IE8+
 
-two versions portrait & landscape - set boolean App.landscape for the correct version.
 
 ##Assets
 
-The "models" folder need to exist in the following location ./assets/images/.
 
 
 ##Deployment
-The Application has been developed specifically to run offline and will be deployed through the SCALA platform. See : [More info...](http://scala.com/digital-signage-software/)
 
 
 ##Structure

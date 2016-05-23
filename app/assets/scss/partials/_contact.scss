@@ -3,18 +3,32 @@
 
 	.fifty {
 		&:first-child {
-			padding: 7% 28% 7% 10%;	
+			padding: 7% 18% 7% 10%;
+			@include breakpoint(widescreen) {
+				padding: 7% 28% 7% 10%;	
+			}
 		}
 	}
 	h1 {
 		font-weight: 100;
+	    margin-bottom: 0.4em;
 	}
 	p {
+		line-height: 1.7em;
 		&.first {
 			margin-bottom:25%;	
 		}
 		&.second {
 			margin-bottom:12.5%;	
 		}
+		&.footer {
+			font-size: 0.5em;
+		}
+	}
+	span {
+        padding: 10px;
+	    background: $mid-grey;
+	    display: inline-block;
 	}
 }
+

@@ -115,21 +115,44 @@ var mousewheelevt = /Firefox/i.test(navigator.userAgent) ? 'DOMMouseScroll' : 'w
         goToSection: function(id) {
             $('html, body').animate({
                 scrollTop: $(id).offset().top - 50
-            }, 100);
+            }, 500);
         },
 
 
 		setHeightOther: function () {
-            console.log('setting - height');
+            //ensure height adjusts on resize
+            //console.log('setting - height');
 			var windowHeightminus = $(window).height() - 50;
 			var windowHeightminusonthego = $(window).height() - 0;
 			var windowHeight = $(window).height();
-			var mainContent = $('.main-content').outerHeight(true);
-			if (windowHeightminus > mainContent) {
+
+			var heroContent = $('#hero .main-content').outerHeight(true);
+			if (windowHeightminus > heroContent) {
 				$('#wrapper>section').css('height', windowHeightminus);
 			} else {
-			   //$('#wrapper>section').css('height', mainContent); 
+			   $('#wrapper>section').css('height', heroContent); 
 			}
+
+            var introContent = $('#intro .main-content').outerHeight(true);
+            if (windowHeightminus > introContent) {
+                $('#wrapper>section').css('height', windowHeightminus);
+            } else {
+               $('#wrapper>section').css('height', introContent); 
+            }
+
+            var sliderContent = $('#intro .main-content').outerHeight(true);
+            if (windowHeightminus > sliderContent) {
+                $('#wrapper>section').css('height', windowHeightminus);
+            } else {
+               $('#wrapper>section').css('height', sliderContent); 
+            }
+
+            var contactContent = $('#intro .main-content').outerHeight(true);
+            if (windowHeightminus > contactContent) {
+                $('#wrapper>section').css('height', windowHeightminus);
+            } else {
+               $('#wrapper>section').css('height', contactContent); 
+            }
 		},
 
         scrollHandlers: function() {
@@ -312,22 +335,14 @@ var mousewheelevt = /Firefox/i.test(navigator.userAgent) ? 'DOMMouseScroll' : 'w
                 $('.nav-btn').prop('disabled', !1), 
                 0 === currentSection && $('.nav-btn.up').prop('disabled', !0), 
                 currentSection === sections.length - 1 && $('.nav-btn.down').prop('disabled', !0);
-                if(currentSection === 10){
-                    $body.attr('data-forward', false), 
-                    $body.attr('data-started', false), 
-                    $body.attr('data-ended', true), 
-                    //$body.attr('data-current-section', 10),
-                    $body.removeClass('start'),
-                    $(document).unbind(mousewheelevt, App.mouseWheelHandler);
-                    $('.swiper-container, #sections-list').addClass('rel');
-                    return;
-                } else {
-                    $(document).bind(mousewheelevt, App.mouseWheelHandler);
-                    $('.swiper-container, #sections-list').removeClass('rel');
-                }
                 var n = e ? trValues[t.index].article.delay.forward : trValues[t.index].article.delay.backward;
                 console.log('currentSection', currentSection);
                 //if last section unbind mousewheel control & remove absolute positioning
+                if(currentSection === 10){
+                    $body.attr('data-started', false);
+                    $body.attr('data-ended', true);
+                }
+
                 if (i) {
                     var r = stripe._gsTransform ? stripe._gsTransform.rotation : 0;
                     console.log(r);
@@ -394,12 +409,17 @@ var mousewheelevt = /Firefox/i.test(navigator.userAgent) ? 'DOMMouseScroll' : 'w
                     force3D: !0,
                     ease: Quad.easeInOut,
                     onComplete: function() {
-                        console.log($body.attr('data-started'),$body.attr('data-forward'),currentSection);
+                        //console.log($body.attr('data-started'),$body.attr('data-forward'),currentSection);
                         setTimeout(function() {
                             if( ($body.attr('data-started') === 'true') && ($body.attr('data-forward') === 'false') && (currentSection === 0)) {
                                 console.log('all true');
                                 $(document).unbind(mousewheelevt, App.mouseWheelHandler);
                                 $body.attr('data-started',false)
+                                return;
+                            }
+                            if( ($body.attr('data-started') === 'false') && ($body.attr('data-forward') === 'true') && (currentSection === 10)) {
+                                console.log('all true');
+                                $(document).unbind(mousewheelevt, App.mouseWheelHandler);
                                 return;
                             }
                         },750);
@@ -421,6 +441,9 @@ var mousewheelevt = /Firefox/i.test(navigator.userAgent) ? 'DOMMouseScroll' : 'w
                         setTimeout(function() {
                             sliderTitles.find('h1').text(trValues[t.index].sliderTitles.title);
                             sliderTitles.find('h3 span').text(trValues[t.index].sliderTitles.number);
+                            sliderTitles.find('.vertcenter').attr('data-section',currentSection);
+                            sliderTitles.find('p span:first-child').text(trValues[t.index].sliderTitles.verticalOne);
+                            sliderTitles.find('p span:last-child').text(trValues[t.index].sliderTitles.verticalTwo);
                             video.currentTime = trValues[t.index].video.start, 
                             video.play(), 
                             $(video).bind('timeupdate', function() {
@@ -486,7 +509,9 @@ var mousewheelevt = /Firefox/i.test(navigator.userAgent) ? 'DOMMouseScroll' : 'w
                         color:'#4f67e5'
                     },
                     title:'AWARENESS',
-                    number:'01'
+                    number:'01',
+                    verticalOne:'28 DAYS',
+                    verticalTwo:'UNTIL THE FINAL'
                 },
                 iPhone: {
                     duration: 0.5,
@@ -584,7 +609,9 @@ var mousewheelevt = /Firefox/i.test(navigator.userAgent) ? 'DOMMouseScroll' : 'w
                         css:{color:'#4f67e5'}
                     },
                     title:'AWARENESS',
-                    number:'01'
+                    number:'01',
+                    verticalOne:'28 DAYS',
+                    verticalTwo:'UNTIL THE FINAL'
                 },
                 iPhone: {
                     duration: 0.8,
@@ -685,7 +712,9 @@ var mousewheelevt = /Firefox/i.test(navigator.userAgent) ? 'DOMMouseScroll' : 'w
                         delay:1
                     },
                     title:'EXCITE',
-                    number:'02'
+                    number:'02',
+                    verticalOne:'14 DAYS',
+                    verticalTwo:'UNTIL THE FINAL'
                 },
                 iPhone: {
                     duration: 0.8,
@@ -782,7 +811,9 @@ var mousewheelevt = /Firefox/i.test(navigator.userAgent) ? 'DOMMouseScroll' : 'w
                         css:{color:'#ff5745'}
                     },
                     title:'EXCITE',
-                    number:'02'
+                    number:'02',
+                    verticalOne:'14 DAYS',
+                    verticalTwo:'UNTIL THE FINAL'
                 },
                 iPhone: {
                     duration: 0.8,
@@ -878,7 +909,9 @@ var mousewheelevt = /Firefox/i.test(navigator.userAgent) ? 'DOMMouseScroll' : 'w
                         css:{color:'#ff5745'}
                     },
                     title:'EXCITE',
-                    number:'02'
+                    number:'02',
+                    verticalOne:'14 DAYS',
+                    verticalTwo:'UNTIL THE FINAL'
                 },
                 iPhone: {
                     duration: 0.7,
@@ -975,7 +1008,9 @@ var mousewheelevt = /Firefox/i.test(navigator.userAgent) ? 'DOMMouseScroll' : 'w
                         css:{color:'#ff3b20'}
                     },
                     title:'EXCITE',
-                    number:'02'
+                    number:'02',
+                    verticalOne:'14 DAYS',
+                    verticalTwo:'UNTIL THE FINAL'
                 },
                 iPhone: {
                     duration: 0.7,
@@ -1068,7 +1103,9 @@ var mousewheelevt = /Firefox/i.test(navigator.userAgent) ? 'DOMMouseScroll' : 'w
                         color:'#ff3b20'
                     },
                     title:'EXCITE',
-                    number:'02'
+                    number:'02',
+                    verticalOne:'14 DAYS',
+                    verticalTwo:'UNTIL THE FINAL'
                 },
                 iPhone: {
                     duration: 0.7,
@@ -1161,7 +1198,9 @@ var mousewheelevt = /Firefox/i.test(navigator.userAgent) ? 'DOMMouseScroll' : 'w
                         color:'#43db84'
                     },
                     title:'ACTIVATE',
-                    number:'03'
+                    number:'03',
+                    verticalOne:'EVENT',
+                    verticalTwo:'DAY'
                 },
                 iPhone: {
                     duration: 0.7,
@@ -1256,7 +1295,9 @@ var mousewheelevt = /Firefox/i.test(navigator.userAgent) ? 'DOMMouseScroll' : 'w
                         delay:1
                     },
                     title:'POST-EVENT',
-                    number:'04'
+                    number:'04',
+                    verticalOne:'POST',
+                    verticalTwo:'EVENT'
                 },
                 iPhone: {
                     duration: 0.7,
@@ -1338,7 +1379,9 @@ var mousewheelevt = /Firefox/i.test(navigator.userAgent) ? 'DOMMouseScroll' : 'w
                         color:'#7543db'
                     },
                     title:'POST-EVENT',
-                    number:'04'
+                    number:'04',
+                    verticalOne:'POST',
+                    verticalTwo:'EVENT'
                 },
                 iPhone: {
                     duration: 0.7,
@@ -1420,7 +1463,9 @@ var mousewheelevt = /Firefox/i.test(navigator.userAgent) ? 'DOMMouseScroll' : 'w
                         color:'#7543db'
                     },
                     title:'POST-EVENT',
-                    number:'04'
+                    number:'04',
+                    verticalOne:'POST',
+                    verticalTwo:'EVENT'
                 },
                 iPhone: {
                     duration: 0.7,
