@@ -19,6 +19,9 @@
 }
 .logo {
 	float: left;
+	@include breakpoint(mobileonly) {
+		display: none;
+	}
     a {
     	display: block;
     }
@@ -39,4 +42,8 @@
 .center-title {
 	left: 50%;
 	margin-left: -24px;
+	@include breakpoint(mobileonly) {
+		left: 0;
+		margin-left: 25px;
+	}
 }

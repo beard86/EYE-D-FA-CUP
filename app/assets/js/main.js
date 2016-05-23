@@ -226,13 +226,15 @@ var mousewheelevt = /Firefox/i.test(navigator.userAgent) ? 'DOMMouseScroll' : 'w
 					}
 
                     if (distanceY > bindMouseWheel && currentSection === 0) {
-                        console.log('mouse wheel bound');
-                        $body.attr('data-started',true),
-                        $body.attr('data-forward',true),
-                        $('.swiper-container, #sections-list').addClass('z-index20');
-                        App.goToSection('#sliders');
-                        $(document).bind(mousewheelevt, App.mouseWheelHandler);
-                        //App.initSlider();
+                        if (wW > 740) {
+                            console.log('mouse wheel bound');
+                            $body.attr('data-started',true),
+                            $body.attr('data-forward',true),
+                            $('.swiper-container, #sections-list').addClass('z-index20');
+                            App.goToSection('#sliders');
+                            $(document).bind(mousewheelevt, App.mouseWheelHandler);
+                            //App.initSlider();
+                        }
                     }
 
                     prevscroll = document.body.scrollTop || document.documentElement.scrollTop || 0;

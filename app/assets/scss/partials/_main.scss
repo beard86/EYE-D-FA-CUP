@@ -59,60 +59,29 @@ video {
 	            color: #fff;
 	            width:100%;
 	            max-width:100%;
+		@include breakpoint(mobileonly) {
+	            top: 18%;
+		}
 	}
 	h1 {
 		    margin: 1.37em 0 0;
+			@include breakpoint(mobileonly) {
+		            font-size: 1.8em;
+			}
 		    @include breakpoint(desktop) {
 			    margin: 0.37em 0 0;
 		    }
 	}
 	>img {
 		width:100%;
+		@include breakpoint(mobileonly) {
+			width: 270%;
+			left: -84%;
+			position: relative;
+		}
 	}
 }
-#intro {
-	background-color:$dark-blue;
-	>* {
-		margin:0 auto;
-	}
-	hr {
-		width:20%;
-	}
-	h1 {
-		max-width: 600px;
-		margin:0 auto;
-	}
-	.main-content {
-		width:600px;
-		@include breakpoint(desktop) {
-		    max-width: 1540px;
-		    width: 100%;
-		}
-		>img {
-			width:60%;
-			@include breakpoint(desktop) {
-				width:33.333%
-			}
-			@include breakpoint(widescreen) {
-				width:60%;
-			}
-		}
-	}
-	.down {
-		background-color:$darker-blue;
-		width:100%;
-		position: absolute;
-		bottom: 0;
-		height: 70px;
-		max-width:100%;
-		img {
-			width: 40px;
-			margin: 0 auto;
-	        @include vertical-align($position: relative);
 
-		}
-	}
-}
 
 .overlay{
 	display: none;

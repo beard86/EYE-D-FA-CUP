@@ -201,7 +201,14 @@
     background-repeat: no-repeat;
     background-size: contain!important;
 }
-
+#large-video,
+#wide-content,
+#day-screens,
+#video-container {
+    @include breakpoint(mobileonly){
+        display: none;
+    }
+}
 body[data-current-section="0"] #sections-list li:nth-child(1) section:before {
     -webkit-transform: translate3d(0, 160px, 0);
     transform: translate3d(0, 160px, 0)
