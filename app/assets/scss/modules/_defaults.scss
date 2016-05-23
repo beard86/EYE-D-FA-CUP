@@ -1,0 +1,304 @@
+* {
+  box-sizing: border-box;
+  font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+html {
+  font-size: 62.5%;
+  background: $white;
+}
+body {
+  font: 300 22px/1.6 'museosans_100', Helvetica, Arial;
+  color: $white;
+  transition: all .4s .3s ease-in;
+  margin: 0;
+  //padding-top: 80px;
+  position: relative;
+   -webkit-user-drag: none;
+   overflow-x:hidden;
+}
+body,html{
+	//min-height: 100vh;
+	//overflow: hidden;
+}
+p {
+  margin: 0;
+      font-size: 0.65em;
+}
+a {
+  text-decoration:none;
+  color:$dark-grey;
+  &:visited {
+    color:$dark-grey;
+  }
+}
+img {
+  -webkit-user-drag: none;
+  width:100%;
+}
+figure {
+    margin: 0;
+    padding: 0;
+}
+h1,h2,h3,h4 {
+  font-weight: 100;
+}
+h1 {
+  font-weight: 700;
+  font-size:1.8em;
+  font-family: 'Playfair Display', Helvetica, Arial;
+}
+h2 {
+  font-size:1em;
+  font-family:'museosans_700', Helvetica, Arial;
+  margin-top: 0;
+  margin-bottom: 0;
+      line-height: 1em;
+}
+h3 {
+  font-family:'museosans_100', Helvetica, Arial;
+  font-size:0.65em;
+  margin: 0.47em 0;
+      margin-bottom: 0;
+}
+h4 {
+    font-family:'museosans_100', Helvetica, Arial;
+    font-size: 0.8em;
+    margin: 0.47em 0;
+}
+figure {
+    margin: 0;
+}
+.alt {
+  font-family:Helvetica, Arial;
+}
+.xl-text {
+  font-size: 4.5em;
+  margin: 0;
+  line-height: 1em;
+}
+.vertical-text {
+    font-family: 'museosans_700';
+
+  transform: rotate(90deg);
+  transform-origin: right top 0;
+  position: absolute;
+  right: 0px;
+  top: 71.5;
+  letter-spacing: 2px;
+  z-index: 12;
+  @include breakpoint(desktop) {
+    top:81.5%;
+  }
+  @include breakpoint(widescreen) {
+    top:69.5%;
+  }
+  span {
+    color:#fff;
+  }
+}
+.large {
+  font-size: 2.8em;
+  font-weight: 700;
+
+}
+.center {
+  text-align: center;
+}
+.txtleft{
+  text-align: left;
+}
+.abs {
+  position: absolute;
+}
+.rel {
+  position: relative;
+}
+.hidden {
+  display: none;    
+}
+.top-pad-xs {
+  padding-top: 1.4em;
+}
+.top-pad-s {
+  padding-top: 2.6em;
+}
+
+.left-marg-s {
+  margin-left: 1.4em;
+}
+.left-marg-m {
+  margin-left: 2em;
+}
+.left-marg-l {
+  margin-left: 4em;
+}
+.left-marg-xl {
+  margin-left: 6em;
+}
+.pad-seven{
+  padding: 7.5%;
+}
+.center {
+  text-align: center;
+}
+.vertcenter {
+    @include vertical-align();
+        margin: 0;
+}
+.vis-hid {
+  visibility: hidden;
+}
+.ten-eighty {
+  width:100%;
+  height:1080px;
+}
+.full {
+  width:100%;
+}
+.eighty {
+  width:80%;
+  float: left;
+}
+.seventy5 {
+  width:75%;
+  float: left;
+}
+.sixty {
+  width:60%;
+  float: left;
+}
+.fifty {
+  width:50%;
+  float: left;
+    @include breakpoint(mobileonly) {
+    width:100%;
+  }
+
+}
+.forty {
+  width:40%;
+  float: left;
+}
+.thirty {
+  width:30%;
+  float: left;
+}
+.twenty5 {
+  width:25%;
+  float: left;
+
+}
+
+.clearfix {
+  &:after {
+    content: "";
+    display: table;
+    clear: both;
+  }
+}
+ul,ol {
+  padding: 0;
+  margin: 0;
+}
+.table {
+    display: table;
+    width: 100%;
+    position: absolute;
+}
+.footer {
+  font-size: 0.6em;
+}
+.button-wrap {
+      display: table-cell;
+    text-align: center;
+}
+.down {
+  cursor:pointer;
+}
+#down {
+      position: fixed;
+      width: 100%;
+      bottom: 1em;
+      padding-bottom: 1em;
+      z-index: 6;
+      opacity: 1;
+      @include transition(transform 0.2s ease-in-out, opacity 0.4s ease-in-out);
+      @include transform(translateY(0px));
+      &:hover {
+                  @include transform(translateY(5px));
+      }
+      &.fade {
+                  opacity: 0;
+      }
+      &.hide {
+                  display: none;
+      }
+      img {
+                  width: 40px;
+                  margin: 0 auto;
+      }
+}
+.blue {
+  color:$blue;
+}
+h1 {
+  &.blue {
+    font-weight: 700;
+  }
+}
+.red {
+  color:$red;
+}
+.dark-grey {
+  color:$dark-grey;
+}
+.orange {
+  color:$orange;
+}
+.green {
+  color:$green;
+}
+.purple {
+  color:$purple;
+}
+
+
+.tabled {
+            width: 100%;
+            height: 100%;
+            display: table;
+}
+
+.tbl-row {
+            display: table-row;
+}
+
+.cell {
+            display: table-cell;
+            vertical-align: middle;
+            text-align: center;
+            max-width:100%;
+}
+
+
+#stripe {
+    position: absolute;
+    top:60%;
+    left: 0;
+    z-index: 0;
+    width: 100%;
+    height: 54%;
+    background: $blue;
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+    -webkit-transform-style: preserve-3d;
+    -ms-transform-style: preserve-3d;
+    -o-transform-style: preserve-3d;
+    transform-style: preserve-3d;
+    -webkit-transform-origin: 50% 0 0;
+    transform-origin: 50% 0 0;
+    -webkit-transform: translate3d(0, 0, 0);
+    transform: translate3d(0, 0, 0);
+    transition: all,0.5s ease-in-out;
+}

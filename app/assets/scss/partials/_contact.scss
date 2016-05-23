@@ -1,0 +1,20 @@
+#contact {
+	background-color:$grey-blue;
+
+	.fifty {
+		&:first-child {
+			padding: 7% 28% 7% 10%;	
+		}
+	}
+	h1 {
+		font-weight: 100;
+	}
+	p {
+		&.first {
+			margin-bottom:25%;	
+		}
+		&.second {
+			margin-bottom:12.5%;	
+		}
+	}
+}
