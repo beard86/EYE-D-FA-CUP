@@ -12,17 +12,26 @@
 	}
 	.main-content {
 		max-width:600px;
+		@include breakpoint(mobileonly) {
+			padding: 50px 60px 50px;
+		}
+		@include breakpoint(phablet) {
+			max-width: 96%;
+		}
 		@include breakpoint(desktop) {
 		    max-width: 1540px;
 		    width: 100%;
 		}
 		>img {
-			width:60%;
+			width:100%;
+			@include breakpoint(mobileonly) {
+				width:90%
+			}
 			@include breakpoint(desktop) {
 				width:33.333%
 			}
 			@include breakpoint(widescreen) {
-				width:60%;
+				width:68%;
 			}
 		}
 	}
@@ -39,5 +48,8 @@
 	        @include vertical-align($position: relative);
 
 		}
+	}
+	.content-center-inner {
+		vertical-align: bottom;
 	}
 }

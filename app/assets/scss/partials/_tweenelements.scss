@@ -1,0 +1,216 @@
+#video-container {
+    top: 50%;
+    left: 50%;
+    z-index: 1000;
+    width: 19%;
+    min-width: 260px;
+    position: absolute;
+    -webkit-transform: translate(-50%, -40%);
+    transform: translate(-50%, -40%) translate3d(0, 150%, 0px);
+    ;
+    @include breakpoint(phablet) {
+       // top: 105%;
+        width: 48%;
+    }
+    @include breakpoint(laptop) {
+	    width: 16%;
+        //top: 108%;
+    }
+    @include breakpoint(widescreen) {
+	    width: 19%;
+        //top: 108%;
+    }
+    video {
+        position: absolute;
+        top: 8%;
+        z-index: 0;
+        left: 0;
+        width: 100%;
+        padding: 26px;
+        @include breakpoint(widescreen) {
+            padding: 46px;
+        }
+    }
+}
+
+#video-container>div {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0
+}
+
+#video-container:before {
+    content: ' ';
+    display: block;
+    padding-top: 187.53799%
+}
+
+#video-container:after {
+    content: ' ';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url(../../assets/img/sliders/phone-outline.png);
+    background-repeat: no-repeat;
+    background-size: contain!important;
+    background-position: center;
+}
+
+#large-video {
+    top:50%;
+    left: 50%;
+    z-index: 1000;
+	width: 44%;
+	height: 54%;
+    min-width: 260px;
+    position: absolute;
+    -webkit-transform: translate(-50%, -45%);
+    transform: translate(-50%, -45%) ;
+    @include breakpoint(phablet){
+		width: 77%;
+		height: 32%;
+    }
+    @include breakpoint(laptop) {
+        width: 44%;
+        height: 44%;
+    }
+    @include breakpoint(widescreen) {
+        width: 44%;
+        height: 49%;
+    }
+}
+#large-video:after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color:transparent;
+    background-image: url(../../assets/img/preloader.gif);
+    background-repeat: no-repeat;
+    background-size: 50px;
+    background-position: center;
+}
+
+#wide-content {
+	top:50%;
+    left: 50%;
+    z-index: 1000;
+    width: 73%;
+    height: 44%;
+    min-width: 260px;
+    position: absolute;
+    -webkit-transform: translate(-50%, -50%) translate3d(0, -350%, 0px);
+    transform: translate(-50%, -50%) translate3d(0, -350%, 0px);
+    @include breakpoint(phablet) {
+		top: 41%;
+		width: 520px;
+		height: 428px;
+	}
+    @include breakpoint(laptop) {
+		top:50%;
+        width: 43%;
+	    height: 66%;
+	}
+
+    @include breakpoint(widescreen) {
+            //top: -92%;
+    }
+}
+#wide-content:after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url(../../assets/img/preloader.gif);
+    background-repeat: no-repeat;
+    background-size: 50px;
+    background-position: center;
+}
+
+#day-screens {
+	top:50%;
+    left: 50%;
+    z-index: 1000;
+    width: 45.5%;
+    height: 52%;
+    min-width: 260px;
+    position: absolute;
+    -webkit-transform: translate(-50%, -50%) translate3d(0, -350%, 0px);
+    transform: translate(-50%, -50%) translate3d(0, -350%, 0px);
+    @include breakpoint(phablet) {
+		width: 72.5%;
+		height: 32%;
+	    //top: -44%;
+
+    }
+    @include breakpoint(laptop) {
+	    width: 45.5%;
+	    height: 52%;
+    }
+    @include breakpoint(desktop) {
+    	   // top: -81%;
+    }
+    @include breakpoint(widescreen) {
+            //top: -89%;
+    }
+}
+#day-screens:after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url(../../assets/img/sliders/day-screens.jpg);
+    background-repeat: no-repeat;
+    background-size: contain!important;
+}
+video {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 1;
+	&:before {
+		content:'';
+		position: absolute;
+	}
+}
+#image-load {
+    top: 0;
+    position: absolute;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    padding: 22.5% 9.05% 22.5% 10.05%;
+    z-index: 1;
+}
+span.bg {
+    background:$white;
+    width: 82%;
+    height: 82%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    margin: 10% 11%;
+    z-index: 0;
+    @include breakpoint(widescreen) {
+        margin: 12% 2% 11% 10%;
+    }
+}
+#large-video,
+#wide-content,
+#day-screens,
+#video-container {
+    @include breakpoint(mobileonly){
+        display: none;
+    }
+}

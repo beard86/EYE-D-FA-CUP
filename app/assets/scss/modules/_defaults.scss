@@ -73,7 +73,7 @@ figure {
   font-family:Helvetica, Arial;
 }
 .xl-text {
-  font-size: 4.5em;
+  font-size: 4em;
   margin: 0;
   line-height: 1em;
 }
@@ -82,17 +82,8 @@ figure {
 
   transform: rotate(90deg);
   transform-origin: right top 0;
-  position: absolute;
-  right: 0px;
-    top:69.5%;
   letter-spacing: 3px;
   z-index: 12;
-  @include breakpoint(desktop) {
-        top: 83.2%;
-  }
-  @include breakpoint(widescreen) {
-    top:69.5%;
-  }
   span {
     &:last-child {
       color:#fff;
@@ -147,10 +138,20 @@ figure {
 .vertcenter {
     @include vertical-align(absolute);
     margin: 0;
-    top: 83.5%;
+    top: 85.5%;
     right: 0;
     width: 245px;
     z-index: 20;
+    @include transition (all .5s cubic-bezier(.25, .46, .45, .94));
+    @include breakpoint(phablet) {
+      top: 78.25%;
+    }
+    @include breakpoint(laptop) {
+      top: 85.5%;
+    }
+    @include breakpoint(widescreen) {
+      top: 73.75%;
+    }
 }
 .vis-hid {
   visibility: hidden;
@@ -215,6 +216,11 @@ ul,ol {
 .footer {
   font-size: 0.6em;
 }
+.z-index20 {
+  z-index: 20;
+
+}
+
 .button-wrap {
       display: table-cell;
     text-align: center;
@@ -268,7 +274,9 @@ h1 {
 .purple {
   color:$purple;
 }
-
+.white {
+  color:$white;
+}
 
 .tabled {
             width: 100%;

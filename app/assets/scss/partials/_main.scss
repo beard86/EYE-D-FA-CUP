@@ -16,6 +16,14 @@ section {
     left: 0;
 	z-index: 3;
     background-size: cover;
+    @include breakpoint(phablet) {
+    		height: 100vh!important;
+
+    }
+    @include breakpoint(laptop) {
+    		height: auto;
+
+    }
 }
 .content {
 	height: 100%;
@@ -49,6 +57,9 @@ video {
     position: relative;
     height: 0;
     padding-bottom: 57%;
+	@include breakpoint(mobileonly) {
+            top: 75px;;
+	}
 	.text-container {
 	            position: absolute;
 	            top: 30%;
@@ -60,13 +71,14 @@ video {
 	            width:100%;
 	            max-width:100%;
 		@include breakpoint(mobileonly) {
-	            top: 18%;
+	            top: 20%;
 		}
 	}
 	h1 {
 		    margin: 1.37em 0 0;
 			@include breakpoint(mobileonly) {
 		            font-size: 1.8em;
+	                margin: 0;
 			}
 		    @include breakpoint(desktop) {
 			    margin: 0.37em 0 0;
@@ -78,6 +90,12 @@ video {
 			width: 270%;
 			left: -84%;
 			position: relative;
+		}
+		@include breakpoint(phablet) {
+			transform: scale(3);
+		}
+		@include breakpoint(laptop) {
+			transform: scale(1);
 		}
 	}
 }

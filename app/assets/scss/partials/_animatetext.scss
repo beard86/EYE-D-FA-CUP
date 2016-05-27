@@ -1,0 +1,38 @@
+body[data-current-section="0"] #sections-list li:nth-child(1) section:before {
+    -webkit-transform: translate3d(0, 160px, 0);
+    transform: translate3d(0, 160px, 0)
+}
+body[data-current-section="2"] #sections-list li:nth-child(1) section:before,
+body[data-current-section="1"] #sections-list li:nth-child(2) section:before {
+    -webkit-transform: translate3d(-160px, 0, 0);
+    transform: translate3d(-160px, 0, 0)
+}
+body[data-current-section="3"] #sections-list li:nth-child(2) section:before {
+    -webkit-transform: translate3d(160px, 0, 0);
+    transform: translate3d(160px, 0, 0)
+}
+body[data-current-section="3"] #sections-list li:nth-child(2) h2,
+body[data-current-section="3"] #sections-list li:nth-child(2) p {
+    -webkit-transform: translate3d(-160px, 0, 0);
+    transform: translate3d(-160px, 0, 0)
+}
+body[data-current-section="2"] #sections-list li:nth-child(3) section:before {
+    -webkit-transform: translate3d(160px, 0, 0);
+    transform: translate3d(160px, 0, 0)
+}
+body[data-current-section="2"] #sections-list li:nth-child(3) h2,
+body[data-current-section="2"] #sections-list li:nth-child(3) p,
+body[data-current-section="3"] #sections-list li:nth-child(4) section:before,
+body[data-current-section="4"] #sections-list li:nth-child(3) section:before {
+    //-webkit-transform: translate3d(-160px, 0, 0);
+    //transform: translate3d(-160px, 0, 0)
+}
+body[data-current-section="5"] #sections-list li:nth-child(4) section:before {
+    -webkit-transform: translate3d(0, -160px, 0);
+    transform: translate3d(0, -160px, 0);
+}
+body[data-current-section="5"] #sections-list li:nth-child(4) h2,
+body[data-current-section="5"] #sections-list li:nth-child(4) p {
+    -webkit-transform: translate3d(0, 160px, 0);
+    transform: translate3d(0, 160px, 0);
+}

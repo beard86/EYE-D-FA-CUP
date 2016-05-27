@@ -1,6 +1,13 @@
 @import url(https://fonts.googleapis.com/css?family=Playfair+Display:400,700,900);
-@import url(https://fonts.googleapis.com/css?family=Yantramanav:400,300,100);
 
+@font-face {
+    font-family: 'brandon_grotesquethin';
+    src: url('../fonts/brandon/brandon_thin-webfont.woff2') format('woff2'),
+         url('../fonts/brandon/brandon_thin-webfont.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+
+}
 @font-face {
   font-family: 'museosans_100';
   src: url('../fonts/museosans_100/MuseoSans_100-webfont.eot');

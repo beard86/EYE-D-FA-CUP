@@ -1,15 +1,18 @@
 'use strict';
  /*jshint unused:false*/
-var App;
 
 (function ($, window, document, undefined) {
-var appLang = $('html').attr('lang'),
+var App;
+var endFrame = 14,
+    appLang = $('html').attr('lang'),
     $body = $('body'),
     wH, wW, pixelDensity = window.devicePixelRatio || 1,
     dragging = !1,
     scrolling = !1,
     transitioning = !1,
-    transitionTimer, onResizeTimer, mobile = /iPhone|iPad|iPod|Android|webOS|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ? !0 : !1,
+    transitionTimer, 
+    onResizeTimer, 
+    mobile = /iPhone|iPad|iPod|Android|webOS|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ? !0 : !1,
     isIE9 = $('html').hasClass('ie9') ? !0 : !1,
     isiOS = navigator.userAgent.match(/(iPad|iPhone|iPod)/g) ? !0 : !1,
     isiOS8 = navigator.userAgent.match(/(iPad|iPhone|iPod).*OS 8_\d/i),
@@ -32,9 +35,10 @@ var mousewheelevt = /Firefox/i.test(navigator.userAgent) ? 'DOMMouseScroll' : 'w
     sliderSection = $('#titles h3 span'),
     video = $('#video')[0],
     videoTwo = $('#video2')[0],
+    videoThree = $('#video3')[0],
     timelineCtn = $('#timeline-ctn'),
-
-    wideContentTransVal, largeScreenTransVal, iPhoneTransVal, slider, lastSwipeProgress, lastViableProgress, slidesNumber, touchmoveDisabled = !1;
+    tabletScroll = new TabletScroll(),
+    forward, wideContentTransVal, largeScreenTransVal, iPhoneTransVal, slider, lastSwipeProgress, lastViableProgress, slidesNumber, touchmoveDisabled = !1;
 
 
   $(function () { App.init(); });
@@ -55,7 +59,6 @@ var mousewheelevt = /Firefox/i.test(navigator.userAgent) ? 'DOMMouseScroll' : 'w
 		},
 		setDefaults: function() {
 			App.scrollHandlers();
-			App.setHeightOther();
             App.layoutSettings();
             
             //init Navigation
@@ -65,17 +68,19 @@ var mousewheelevt = /Firefox/i.test(navigator.userAgent) ? 'DOMMouseScroll' : 'w
 
 		},
         layoutSettings : function() {
+
             //layout Settings
+            App.setHeightOther(),
             wW = window.innerWidth, 
             wH = $(window).height(),
             wideContentTransVal = wideContent.height() - (wH - wideContent.height()),
-            largeScreenTransVal = -largeScreen.height() - (wH - largeScreen.height()) / 2,
+            //largeScreenTransVal = -largeScreen.height() - (wH - largeScreen.height()) / 2,
             iPhoneTransVal = -iPhone.height() - (wH - iPhone.height()) / 2, 
             740 >= wW ? slider || App.initSlider() : slider && (slider.destroy(), 
             slider = null, 
             $('.swiper-slide').width('')), 
-            mobile && (wW > 740 && !touchmoveDisabled ? App.tabletScroll.init() : App.tabletScroll.kill());
-            console.log(wideContentTransVal, largeScreenTransVal, iPhoneTransVal);
+            mobile && (wW > 740 && !touchmoveDisabled ? tabletScroll.init() : tabletScroll.kill());
+            //console.log(mobile,wideContentTransVal, largeScreenTransVal, iPhoneTransVal);
 
         },
 		eventHandlers : function(){
@@ -85,23 +90,52 @@ var mousewheelevt = /Firefox/i.test(navigator.userAgent) ? 'DOMMouseScroll' : 'w
 				location.href= 'index.html';
 			});
 
+            //left hand chapter clicks
+            $('body').on('click touchend', '#titles ul li', function(event){
+                event.preventDefault();
+                var thisIndex = $(this).index();
+                if(thisIndex === 1) {
+                    var chapter2 = 5;
+                    sections[chapter2].animate(true);
+                    $body.attr('data-current-section', chapter2);
+                    currentSection = chapter2;
+                } else if(thisIndex === 2){
+                    var chapter3 = 10;
+                    sections[chapter3].animate(true);
+                    $body.attr('data-current-section', chapter3);
+                    currentSection = chapter3;
+                } else if(thisIndex === 3){
+                    var chapter4 = 11;
+                    sections[chapter4].animate(true);
+                    $body.attr('data-current-section', chapter4);
+                    currentSection = chapter4;
+                } else {
+                    sections[thisIndex].animate(true);
+                    $body.attr('data-current-section', 0);
+                    currentSection = 0;
+
+                }
+            });
+
 			$('body').on('click touchend', '#down', function(event){
 				event.preventDefault();
-				App.goToSection('#intro');
+				App.goToSection('#intro',25);
 			});
 			$('body').on('click touchend', '#down-intro', function(event){
 				event.preventDefault();
-				App.goToSection('#sliders');
+				App.goToSection('#sliders',-50);
 			});
             var distance = $('#sliders').offset().top -100,
                 $window = $(window);
             $window.scroll(function() {
                 if ( $window.scrollTop() >= distance ) {
-                    console.log('sliders top');
+                   // console.log('sliders top');
                     //$(document).bind(mousewheelevt, App.mouseWheelHandler);
                 }
             });
             $(window).resize(function() {
+                //ensure content centers on resize
+                $('.tween-center').css('transform','translate3d(-50%,0,0)'),
                 App.setHeightOther(),
                 App.layoutSettings(),  
                 App.getTransitionValues(), 
@@ -109,12 +143,23 @@ var mousewheelevt = /Firefox/i.test(navigator.userAgent) ? 'DOMMouseScroll' : 'w
                 onResizeTimer = setTimeout(function() {
                     sections[currentSection].animate();
                 }, 100));
+                if(wW < 740) {
+                    $(document).unbind(mousewheelevt, App.mouseWheelHandler);
+                }
             });
-		},
+            $(document).keydown(function(e) {
+                e.preventDefault();
+                var t = [37, 38, 39, 40];
+                if (!transitioning && -1 !== t.indexOf(e.which)) {
+                    var i;
+                    transitioning = !0, 37 === e.which || 38 === e.which ? currentSection > 0 && (currentSection--, i = !1) : currentSection < sections.length - 1 && (currentSection++, i = !0), sections[currentSection].animate(i);
+                }
+            });
+     	},
 
-        goToSection: function(id) {
+        goToSection: function(id,offSet) {
             $('html, body').animate({
-                scrollTop: $(id).offset().top - 50
+                scrollTop: $(id).offset().top + offSet
             }, 500);
         },
 
@@ -123,35 +168,37 @@ var mousewheelevt = /Firefox/i.test(navigator.userAgent) ? 'DOMMouseScroll' : 'w
             //ensure height adjusts on resize
             //console.log('setting - height');
 			var windowHeightminus = $(window).height() - 50;
-			var windowHeightminusonthego = $(window).height() - 0;
+			var windowHeightPlus = $(window).height() + 25;
 			var windowHeight = $(window).height();
 
 			var heroContent = $('#hero .main-content').outerHeight(true);
 			if (windowHeightminus > heroContent) {
-				$('#wrapper>section').css('height', windowHeightminus);
+				$('#wrapper>section#hero').css('height', windowHeightminus);
 			} else {
-			   $('#wrapper>section').css('height', heroContent); 
+			   $('#wrapper>section#hero').css('height', heroContent); 
 			}
 
             var introContent = $('#intro .main-content').outerHeight(true);
-            if (windowHeightminus > introContent) {
-                $('#wrapper>section').css('height', windowHeightminus);
+            if (windowHeight > introContent) {
+                console.log(windowHeight);
+                $('#wrapper>section#intro').css('height', windowHeightPlus);
             } else {
-               $('#wrapper>section').css('height', introContent); 
+                console.log(introContent);
+               $('#wrapper>section#intro').css('height', introContent); 
             }
 
-            var sliderContent = $('#intro .main-content').outerHeight(true);
+            var sliderContent = $('#sliders .main-content').outerHeight(true);
             if (windowHeightminus > sliderContent) {
-                $('#wrapper>section').css('height', windowHeightminus);
+                $('#wrapper>section#sliders').css('height', windowHeightminus);
             } else {
-               $('#wrapper>section').css('height', sliderContent); 
+               $('#wrapper>section#sliders').css('height', sliderContent); 
             }
 
-            var contactContent = $('#intro .main-content').outerHeight(true);
+            var contactContent = $('#contact .main-content').outerHeight(true);
             if (windowHeightminus > contactContent) {
-                $('#wrapper>section').css('height', windowHeightminus);
+                $('#wrapper>section#contact').css('height', windowHeightminus);
             } else {
-               $('#wrapper>section').css('height', contactContent); 
+               $('#wrapper>section#contact').css('height', contactContent); 
             }
 		},
 
@@ -204,11 +251,16 @@ var mousewheelevt = /Firefox/i.test(navigator.userAgent) ? 'DOMMouseScroll' : 'w
                     }
                     downCheck();
                     for (var i = 0; i < heroimage.length; i++) {
-                        heroimage[i].style.transform = 'translateY(' + herotemp + 'px)';
+                        if(wW >= 769 ) {
+                            heroimage[i].style.transform = 'translateY(' + herotemp + 'px)';
+                        } else {
+                            heroimage[i].style.transform =  'scale(3)';
+                        }
                     }
 					var distanceY = window.pageYOffset || document.documentElement.scrollTop,
-					    shrinkOn = $('#intro').offset().top-50,
+					    shrinkOn = $('#intro').offset().top-75,
                         bindMouseWheel = $('#sliders').offset().top-50,
+                        startVideo = $('#sliders').offset().top-150,
 					    header = document.querySelector('header'),
                         headerLogo = document.querySelector('.logo'),
                         centerTitle = document.querySelector('.title');
@@ -224,16 +276,36 @@ var mousewheelevt = /Firefox/i.test(navigator.userAgent) ? 'DOMMouseScroll' : 'w
                             classie.add(centerTitle, 'center-title');
 					    }
 					}
-
-                    if (distanceY > bindMouseWheel && currentSection === 0) {
+                    if (distanceY > startVideo) {
+                        playVideoTwo();
+                    }
+                    if (distanceY > bindMouseWheel) {
                         if (wW > 740) {
-                            console.log('mouse wheel bound');
-                            $body.attr('data-started',true),
-                            $body.attr('data-forward',true),
-                            $('.swiper-container, #sections-list').addClass('z-index20');
-                            App.goToSection('#sliders');
-                            $(document).bind(mousewheelevt, App.mouseWheelHandler);
-                            //App.initSlider();
+                            if(currentSection === 0 && $body.attr('data-started') === 'false') {
+                                //console.log('mouse wheel bound');
+                                App.goToSection('#sliders',-50);
+
+                                setTimeout(function() {
+                                    $body.attr('data-started',true),
+                                    $body.attr('data-forward',true),
+                                    $('.swiper-container, #sections-list').addClass('z-index20');
+                                    $(document).bind(mousewheelevt, App.mouseWheelHandler);
+                                },750);
+                            }
+                            if(currentSection === 12 && $body.attr('data-ended') === 'true') {
+                                setTimeout(function() {
+                                    //revise for end of animation scrolling back
+                                    //perhaps set everything to 10 & lock
+                                   //console.log('restart animation');
+                                    //currentSection = 0;
+                                    //sections[0].animate(false);
+                                    //$body.attr('data-current-section', 0);
+                                    //$(document).bind(mousewheelevt, App.mouseWheelHandler);
+                                    //App.goToSection('#sliders',-50);
+
+                                },1500);
+
+                            }
                         }
                     }
 
@@ -244,6 +316,7 @@ var mousewheelevt = /Firefox/i.test(navigator.userAgent) ? 'DOMMouseScroll' : 'w
 
         },
         mouseWheelHandler: function(e) {
+            /* jshint expr: true */
             e.preventDefault();
             if (wW > 740) {
                 //console.log(wW);
@@ -256,6 +329,7 @@ var mousewheelevt = /Firefox/i.test(navigator.userAgent) ? 'DOMMouseScroll' : 'w
                     var n;
                     i > 0 ? currentSection > 0 && (currentSection--, n = !1) : 0 > i && currentSection < sections.length - 1 && (currentSection++, n = !0), 
                     0 !== i && (transitioning = !0, sections[currentSection].animate(n));
+                    console.log(n,currentSection, i);
                 }
             }
         },
@@ -290,37 +364,8 @@ var mousewheelevt = /Firefox/i.test(navigator.userAgent) ? 'DOMMouseScroll' : 'w
             }
             requestAnimationFrame(scroll);
         },
-        initSlider: function() {
-            $('#sections-list section').eq(0).addClass('current'), 
-            $('#slider-nav li').eq(0).addClass('current'), 
-            this.slider = $('.swiper-container').swiper({
-                direction: 'horizontal',
-                speed: 700,
-                autoResize: !0,
-                resistanceRatio: 0.7,
-                longSwipesRatio: 0,
-                spaceBetween: 0,
-                onInit: function(e) {
-                    lastSwipeProgress = e.progress;
-                },
-                onTransitionStart: function(e) {
-                    $body.removeClass('slide-change');
-                },
-                onProgress: function(e, t) {
-                    //rotateSlide(e, t), 
-                    $body.addClass('slide-change');
-                },
-                onSlideChangeEnd: function(e) {
-                    lastSwipeProgress = e.progress, 
-                    $('#sections-list section').removeClass('current').eq(e.activeIndex).addClass('current'), $('#slider-nav li').removeClass('current').eq(e.activeIndex).addClass('current');
-                }
-            }), 
-            this.slidesNumber = $('.swiper-slide').length, 
-            $(document).on('click touchend', '#slider-nav a', function(e) {
-                e.preventDefault();
-            });
-        },
         Section: function(e) {
+            /* jshint expr: true */
             var t = this;
             t.index = e, 
             t.DOMel = $('section').eq(e), 
@@ -329,6 +374,7 @@ var mousewheelevt = /Firefox/i.test(navigator.userAgent) ? 'DOMMouseScroll' : 'w
             t.title = t.DOMel.find('h2'), 
             t.paragraph = t.DOMel.find('p'), 
             t.animate = function(e, i) {
+                /* jshint expr: true */
                 0 === currentSection ? $body.removeClass('started') : $body.addClass('started'), 
                 $body.attr('data-forward', e),
                 $body.attr('data-started', true),
@@ -340,14 +386,14 @@ var mousewheelevt = /Firefox/i.test(navigator.userAgent) ? 'DOMMouseScroll' : 'w
                 var n = e ? trValues[t.index].article.delay.forward : trValues[t.index].article.delay.backward;
                 console.log('currentSection', currentSection);
                 //if last section unbind mousewheel control & remove absolute positioning
-                if(currentSection === 10){
+                if(currentSection === endFrame){
                     $body.attr('data-started', false);
                     $body.attr('data-ended', true);
                 }
 
                 if (i) {
                     var r = stripe._gsTransform ? stripe._gsTransform.rotation : 0;
-                    console.log(r);
+                    //console.log(r);
                     TweenMax.to(
                         iPhone, 
                         trValues[t.index].iPhone.duration, 
@@ -372,8 +418,9 @@ var mousewheelevt = /Firefox/i.test(navigator.userAgent) ? 'DOMMouseScroll' : 'w
                         }
                     });
                 } else  {
-                    console.log('else'); 
+                    //console.log('else'); 
                 }
+                //TweenMax.set(".tween-center", {xPercent:-50, yPercent:-50});
                 TweenMax.to(
                     sliderTitles, 
                     trValues[t.index].sliderTitles.duration, 
@@ -414,13 +461,13 @@ var mousewheelevt = /Firefox/i.test(navigator.userAgent) ? 'DOMMouseScroll' : 'w
                         //console.log($body.attr('data-started'),$body.attr('data-forward'),currentSection);
                         setTimeout(function() {
                             if( ($body.attr('data-started') === 'true') && ($body.attr('data-forward') === 'false') && (currentSection === 0)) {
-                                console.log('all true');
+                                //console.log('animation at start unbind');
                                 $(document).unbind(mousewheelevt, App.mouseWheelHandler);
-                                $body.attr('data-started',false)
+                                $body.attr('data-started',false);
                                 return;
                             }
-                            if( ($body.attr('data-started') === 'false') && ($body.attr('data-forward') === 'true') && (currentSection === 10)) {
-                                console.log('all true');
+                            if( ($body.attr('data-started') === 'false') && ($body.attr('data-forward') === 'true') && (currentSection === endFrame)) {
+                                //console.log('animation at end unbind');
                                 $(document).unbind(mousewheelevt, App.mouseWheelHandler);
                                 return;
                             }
@@ -443,14 +490,43 @@ var mousewheelevt = /Firefox/i.test(navigator.userAgent) ? 'DOMMouseScroll' : 'w
                         setTimeout(function() {
                             sliderTitles.find('h1').text(trValues[t.index].sliderTitles.title);
                             sliderTitles.find('h3 span').text(trValues[t.index].sliderTitles.number);
-                            sliderTitles.find('.vertcenter').attr('data-section',currentSection);
-                            sliderTitles.find('p span:first-child').text(trValues[t.index].sliderTitles.verticalOne);
-                            sliderTitles.find('p span:last-child').text(trValues[t.index].sliderTitles.verticalTwo);
-                            video.currentTime = trValues[t.index].video.start, 
-                            video.play(), 
-                            $(video).bind('timeupdate', function() {
-                                this.currentTime >= trValues[t.index].video.end && this.pause();
-                            });
+                            sliderTitles.find('.copy div:first-child').text(trValues[t.index].sliderTitles.first);
+                            sliderTitles.find('.copy div:last-child').text(trValues[t.index].sliderTitles.last);
+                            if(trValues[t.index].video) {
+                                video.currentTime = trValues[t.index].video.start, 
+                                video.play(), 
+                                $(video).bind('timeupdate', function() {
+                                    this.currentTime >= trValues[t.index].video.end && this.pause();
+                                });
+                            }
+                            if(trValues[t.index].videoTwo) {
+                                videoTwo.currentTime = trValues[t.index].videoTwo.start, 
+                                videoTwo.play(), 
+                                $(videoTwo).bind('timeupdate', function() {
+                                    this.currentTime >= trValues[t.index].videoTwo.end && this.pause();
+                                });
+                            }
+                            if(trValues[t.index].videoThree) {
+                                videoThree.currentTime = trValues[t.index].videoThree.start, 
+                                videoThree.play(), 
+                                $(videoThree).bind('timeupdate', function() {
+                                    this.currentTime >= trValues[t.index].videoThree.end && this.pause();
+                                });
+                            }
+                            if(trValues[t.index].imageAnimate) {
+                                var url = '../assets/img/sliders/sequence-' + trValues[t.index].imageAnimate.img + '.jpg';
+                                //$('#image-load').attr('src','../assets/img/sliders/sequence-' + trValues[t.index].imageAnimate.img + '.jpg');
+                                console.log(video);
+                                    $('#video').css('display','none');
+                                  $('#image-load').fadeTo(500,0.30, function() {
+                                      $('#image-load').attr('src',url);
+                                  }).fadeTo(500,1, function() {
+                                    $('#video').css('display','block');
+
+                                  });
+                                  return false;
+
+                            }
                         }, 500));
                     }
                 }), 
@@ -464,7 +540,7 @@ var mousewheelevt = /Firefox/i.test(navigator.userAgent) ? 'DOMMouseScroll' : 'w
 
         },
         getTransitionValues: function () {
-            //step by step animation
+            //Green Sock step by step animation
             trValues[0] = {
                 stripe: {
                     duration: 0.5,
@@ -492,9 +568,8 @@ var mousewheelevt = /Firefox/i.test(navigator.userAgent) ? 'DOMMouseScroll' : 'w
                     duration: 0,
                     values: {
                         delay: 0.9,
-                        y: 0,
+                        y: '-250%',
                         rotationZ: 0,
-                        force3D: !0,
                         ease: Quad.easeInOut
                     }
                 },
@@ -502,7 +577,7 @@ var mousewheelevt = /Firefox/i.test(navigator.userAgent) ? 'DOMMouseScroll' : 'w
                     duration: 0.9,
                     values: {
                         delay: 0.9,
-                        y: 0,
+                        y:'-350%',
                     },
                 },
                 sliderTitles: {
@@ -510,16 +585,18 @@ var mousewheelevt = /Firefox/i.test(navigator.userAgent) ? 'DOMMouseScroll' : 'w
                     values: {
                         color:'#4f67e5'
                     },
-                    title:'AWARENESS',
+                    title:'awareness',
                     number:'01',
                     verticalOne:'28 DAYS',
-                    verticalTwo:'UNTIL THE FINAL'
+                    verticalTwo:'UNTIL THE FINAL',
+                    first:'The FA Cup Semi-Finals have concluded,',
+                    last:'there are 28 days left until the final.'
                 },
                 iPhone: {
                     duration: 0.5,
                     values: {
                         delay: 0.7,
-                        y: 0,
+                        y: '150%',
                         rotationZ: -15,
                         force3D: !0,
                         ease: Quad.easeInOut
@@ -529,7 +606,7 @@ var mousewheelevt = /Firefox/i.test(navigator.userAgent) ? 'DOMMouseScroll' : 'w
                     duration: 0.8,
                     values: {
                         delay: 0.9,
-                        y: 0,
+                        y: '-45%',
                         rotationZ: 0,
                         force3D: !0,
                         ease: Quad.easeInOut
@@ -561,9 +638,9 @@ var mousewheelevt = /Firefox/i.test(navigator.userAgent) ? 'DOMMouseScroll' : 'w
                         ease: Quad.easeInOut
                     }
                 },
-                video: {
-                    start: 0,
-                    end: 0
+                videoTwo: {
+                    start: 10,
+                    end: 60
                 }
             }, 
             trValues[1] = {
@@ -592,14 +669,14 @@ var mousewheelevt = /Firefox/i.test(navigator.userAgent) ? 'DOMMouseScroll' : 'w
                     duration: 0.9,
                     values: {
                         delay: 0.9,
-                        y: 0,
+                        y:'-350%',
                     },
                 },
                 wideContent: {
                     duration: 0,
                     values: {
                         delay: 0.9,
-                        y: 0,
+                        y: '-250%',
                         rotationZ: 0,
                         force3D: !0,
                         ease: Quad.easeInOut
@@ -610,16 +687,16 @@ var mousewheelevt = /Firefox/i.test(navigator.userAgent) ? 'DOMMouseScroll' : 'w
                     values: {
                         css:{color:'#4f67e5'}
                     },
-                    title:'AWARENESS',
+                    title:'awareness',
                     number:'01',
-                    verticalOne:'28 DAYS',
-                    verticalTwo:'UNTIL THE FINAL'
+                    first:'The FA Cup Semi-Finals have concluded,',
+                    last:'there are 28 days left until the final.'
                 },
                 iPhone: {
                     duration: 0.8,
                     values: {
                         delay: 0.3,
-                        y: iPhoneTransVal+20,
+                        y: '-40%',
                         rotationZ: 0,
                         force3D: !0,
                         ease: Sine.easeInOut
@@ -630,7 +707,7 @@ var mousewheelevt = /Firefox/i.test(navigator.userAgent) ? 'DOMMouseScroll' : 'w
                     values: {
                         delay: 0.9,
                         //changed to large screen transval
-                        y: largeScreenTransVal-274,
+                        y: '-350%',
                         rotationZ: -30,
                         force3D: !0,
                         ease: Quad.easeInOut
@@ -663,12 +740,337 @@ var mousewheelevt = /Firefox/i.test(navigator.userAgent) ? 'DOMMouseScroll' : 'w
                         ease: Quad.easeInOut
                     }
                 },
-                video: {
-                    start: 0,
-                    end: 30
+                imageAnimate: {
+                    img: '0',
+                    duration: 0.5,
+                    values: {
+                        delay: 0,
+
+                    }
+                }
+            },
+            trValues[2] = {
+                stripe: {
+                    duration: 1.3,
+                    values: {
+                        backgroundColor:'#4f67e5',
+                        delay: 0,
+                        y: 0,
+                        rotationZ: 0,
+                        scaleY: 5,
+                        force3D: !0,
+                        ease: Quad.easeInOut
+                    },
+                    returns: {
+                        backgroundColor:'#4f67e5',
+                        delay: 2,
+                        y: 0,
+                        rotationZ: 0,
+                        scaleX: 1,
+                        force3D: !0,
+                        ease: Quad.easeInOut
+                    }
+                },
+                dayScreens: {
+                    duration: 0.9,
+                    values: {
+                        delay: 0.9,
+                        y:'-350%',
+                    },
+                },
+                wideContent: {
+                    duration: 0,
+                    values: {
+                        delay: 0.9,
+                        y: '-250%',
+                        rotationZ: 0,
+                        force3D: !0,
+                        ease: Quad.easeInOut
+                    }
+                },
+                sliderTitles: {
+                    duration: 0.5,
+                    values: {
+                        css:{color:'#4f67e5'}
+                    },
+                    title:'awareness',
+                    number:'01',
+                    first:'The FA Cup Semi-Finals have concluded,',
+                    last:'there are 28 days left until the final.'
+                },
+                iPhone: {
+                    duration: 0.8,
+                    values: {
+                        delay: 0.3,
+                        y: '-40%',
+                        rotationZ: 0,
+                        force3D: !0,
+                        ease: Sine.easeInOut
+                    }
+                },
+                largeScreen: {
+                    duration: 0.8,
+                    values: {
+                        delay: 0.9,
+                        //changed to large screen transval
+                        y: '-350%',
+                        rotationZ: -30,
+                        force3D: !0,
+                        ease: Quad.easeInOut
+
+                    }
+                },
+                article: {
+                    delay: {
+                        forward: 600,
+                        backward: 600
+                    }
+                },
+                timelineCtn: {
+                    duration: 0.8,
+                    values: {
+                        delay: 0.2,
+                        y: 130,
+                        rotationZ: 0,
+                        opacity: 1,
+                        force3D: !0,
+                        ease: Quint.easeInOut
+                    }
+                },
+                timeline: {
+                    duration: 0.5,
+                    values: {
+                        delay: 0,
+                        x: '25%',
+                        force3D: !0,
+                        ease: Quad.easeInOut
+                    }
+                },
+                imageAnimate: {
+                    img: '1',
+                    duration: 0.5,
+                    values: {
+                        delay: 0,
+
+                    }
+                }
+            },
+            trValues[3] = {
+                stripe: {
+                    duration: 1.3,
+                    values: {
+                        backgroundColor:'#4f67e5',
+                        delay: 0,
+                        y: 0,
+                        rotationZ: 0,
+                        scaleY: 5,
+                        force3D: !0,
+                        ease: Quad.easeInOut
+                    },
+                    returns: {
+                        backgroundColor:'#4f67e5',
+                        delay: 2,
+                        y: 0,
+                        rotationZ: 0,
+                        scaleX: 1,
+                        force3D: !0,
+                        ease: Quad.easeInOut
+                    }
+                },
+                dayScreens: {
+                    duration: 0.9,
+                    values: {
+                        delay: 0.9,
+                        y:'-350%',
+                    },
+                },
+                wideContent: {
+                    duration: 0,
+                    values: {
+                        delay: 0.9,
+                        y: '-250%',
+                        rotationZ: 0,
+                        force3D: !0,
+                        ease: Quad.easeInOut
+                    }
+                },
+                sliderTitles: {
+                    duration: 0.5,
+                    values: {
+                        css:{color:'#4f67e5'}
+                    },
+                    title:'awareness',
+                    number:'01',
+                    verticalOne:'28 DAYS',
+                    first:'The FA Cup Semi-Finals have concluded,',
+                    last:'there are 28 days left until the final.'
+                },
+                iPhone: {
+                    duration: 0.8,
+                    values: {
+                        delay: 0.3,
+                        y: '-40%',
+                        rotationZ: 0,
+                        force3D: !0,
+                        ease: Sine.easeInOut
+                    }
+                },
+                largeScreen: {
+                    duration: 0.8,
+                    values: {
+                        delay: 0.9,
+                        //changed to large screen transval
+                        y: '-350%',
+                        rotationZ: -30,
+                        force3D: !0,
+                        ease: Quad.easeInOut
+
+                    }
+                },
+                article: {
+                    delay: {
+                        forward: 600,
+                        backward: 600
+                    }
+                },
+                timelineCtn: {
+                    duration: 0.8,
+                    values: {
+                        delay: 0.2,
+                        y: 130,
+                        rotationZ: 0,
+                        opacity: 1,
+                        force3D: !0,
+                        ease: Quint.easeInOut
+                    }
+                },
+                timeline: {
+                    duration: 0.5,
+                    values: {
+                        delay: 0,
+                        x: '25%',
+                        force3D: !0,
+                        ease: Quad.easeInOut
+                    }
+                },
+                imageAnimate: {
+                    img: '2',
+                    duration: 0.5,
+                    values: {
+                        delay: 0,
+
+                    }
+                }
+            },
+            trValues[4] = {
+                stripe: {
+                    duration: 1.3,
+                    values: {
+                        backgroundColor:'#4f67e5',
+                        delay: 0,
+                        y: 0,
+                        rotationZ: 0,
+                        scaleY: 5,
+                        force3D: !0,
+                        ease: Quad.easeInOut
+                    },
+                    returns: {
+                        backgroundColor:'#4f67e5',
+                        delay: 2,
+                        y: 0,
+                        rotationZ: 0,
+                        scaleX: 1,
+                        force3D: !0,
+                        ease: Quad.easeInOut
+                    }
+                },
+                dayScreens: {
+                    duration: 0.9,
+                    values: {
+                        delay: 0.9,
+                        y:'-350%',
+                    },
+                },
+                wideContent: {
+                    duration: 0,
+                    values: {
+                        delay: 0.9,
+                        y: '-250%',
+                        rotationZ: 0,
+                        force3D: !0,
+                        ease: Quad.easeInOut
+                    }
+                },
+                sliderTitles: {
+                    duration: 0.5,
+                    values: {
+                        css:{color:'#4f67e5'}
+                    },
+                    title:'awareness',
+                    number:'01',
+                    verticalOne:'28 DAYS',
+                    verticalTwo:'UNTIL THE FINAL',
+                    first:'The FA Cup Semi-Finals have concluded,',
+                    last:'there are 28 days left until the final.'
+                },
+                iPhone: {
+                    duration: 0.8,
+                    values: {
+                        delay: 0.3,
+                        y: '-40%',
+                        rotationZ: 0,
+                        force3D: !0,
+                        ease: Sine.easeInOut
+                    }
+                },
+                largeScreen: {
+                    duration: 0.8,
+                    values: {
+                        delay: 0.9,
+                        //changed to large screen transval
+                        y: '-350%',
+                        rotationZ: -30,
+                        force3D: !0,
+                        ease: Quad.easeInOut
+
+                    }
+                },
+                article: {
+                    delay: {
+                        forward: 600,
+                        backward: 600
+                    }
+                },
+                timelineCtn: {
+                    duration: 0.8,
+                    values: {
+                        delay: 0.2,
+                        y: 130,
+                        rotationZ: 0,
+                        opacity: 1,
+                        force3D: !0,
+                        ease: Quint.easeInOut
+                    }
+                },
+                timeline: {
+                    duration: 0.5,
+                    values: {
+                        delay: 0,
+                        x: '25%',
+                        force3D: !0,
+                        ease: Quad.easeInOut
+                    }
+                },
+                imageAnimate: {
+                    img: '3',
+                    duration: 0.5,
+                    values: {
+                        delay: 0,
+
+                    }
                 }
             }, 
-            trValues[2] = {
+            trValues[5] = {
                 stripe: {
                     duration: 0.5,
                     values: {
@@ -694,14 +1096,14 @@ var mousewheelevt = /Firefox/i.test(navigator.userAgent) ? 'DOMMouseScroll' : 'w
                     duration: 0.9,
                     values: {
                         delay: 0.9,
-                        y: 0,
+                        y:'-350%',
                     },
                 },
                 wideContent: {
                     duration: 0,
                     values: {
                         delay: 0.9,
-                        y: 0,
+                        y: '-250%',
                         rotationZ: 0,
                         force3D: !0,
                         ease: Quad.easeInOut
@@ -713,16 +1115,18 @@ var mousewheelevt = /Firefox/i.test(navigator.userAgent) ? 'DOMMouseScroll' : 'w
                         css:{color:'#ff5745'},
                         delay:1
                     },
-                    title:'EXCITE',
+                    title:'excite',
                     number:'02',
                     verticalOne:'14 DAYS',
-                    verticalTwo:'UNTIL THE FINAL'
+                    verticalTwo:'UNTIL THE FINAL',
+                    first:'There are now 14 days to go, so we begin to',
+                    last:'increase the anticipation for the cup final.'
                 },
                 iPhone: {
                     duration: 0.8,
                     values: {
                         delay: 0.9,
-                        y: 0,
+                        y: '-240%',
                         rotationZ: -15,
                         force3D: !0,
                         ease: Quad.easeInOut
@@ -733,7 +1137,7 @@ var mousewheelevt = /Firefox/i.test(navigator.userAgent) ? 'DOMMouseScroll' : 'w
                     values: {
                         delay: 0.9,
                         rotationZ: 0,
-                        y: 0,
+                        y: '-45%',
                         force3D: !0,
                         ease: Quad.easeInOut
 
@@ -764,11 +1168,11 @@ var mousewheelevt = /Firefox/i.test(navigator.userAgent) ? 'DOMMouseScroll' : 'w
                     }
                 },
                 video: {
-                    start: 11,
-                    end: 23
+                    start: 0,
+                    end: 0
                 }
             }, 
-            trValues[3] = {
+            trValues[6] = {
                 stripe: {
                     duration: 1.3,
                     values: {
@@ -794,14 +1198,14 @@ var mousewheelevt = /Firefox/i.test(navigator.userAgent) ? 'DOMMouseScroll' : 'w
                     duration: 0.9,
                     values: {
                         delay: 0.9,
-                        y: 0,
+                        y:'-350%',
                     },
                 },
                 wideContent: {
                     duration: 0,
                     values: {
                         delay: 0.9,
-                        y: '0%',
+                        y: '-250%',
                         rotationZ: 0,
                         force3D: !0,
                         ease: Quad.easeInOut
@@ -812,17 +1216,19 @@ var mousewheelevt = /Firefox/i.test(navigator.userAgent) ? 'DOMMouseScroll' : 'w
                     values: {
                         css:{color:'#ff5745'}
                     },
-                    title:'EXCITE',
+                    title:'excite',
                     number:'02',
                     verticalOne:'14 DAYS',
-                    verticalTwo:'UNTIL THE FINAL'
+                    verticalTwo:'UNTIL THE FINAL',
+                    first:'There are now 14 days to go, so we begin to',
+                    last:'increase the anticipation for the cup final.'
                 },
                 iPhone: {
                     duration: 0.8,
                     values: {
                         delay: 0.9,
+                        y: '-40%',
                         rotationZ: 0,
-                        y: iPhoneTransVal+20,
                         force3D: !0,
                         ease: Quad.easeInOut
                     }
@@ -831,7 +1237,8 @@ var mousewheelevt = /Firefox/i.test(navigator.userAgent) ? 'DOMMouseScroll' : 'w
                     duration: 0.8,
                     values: {
                         delay: 0.9,
-                        y: largeScreenTransVal-74,
+                        rotationZ: 0,
+                        y: '-350%',
                         force3D: !0,
                         ease: Quad.easeInOut
 
@@ -862,11 +1269,11 @@ var mousewheelevt = /Firefox/i.test(navigator.userAgent) ? 'DOMMouseScroll' : 'w
                     }
                 },
                 video: {
-                    start: 23,
-                    end: 27.5
+                    start: 0,
+                    end: 30
                 }
             }, 
-            trValues[4] = {
+            trValues[7] = {
                 stripe: {
                     duration: 1.3,
                     values: {
@@ -892,14 +1299,14 @@ var mousewheelevt = /Firefox/i.test(navigator.userAgent) ? 'DOMMouseScroll' : 'w
                     duration: 0.9,
                     values: {
                         delay: 0.9,
-                        y: 0,
+                        y:'-350%',
                     },
                 },
                 wideContent: {
                     duration: 0.8,
                     values: {
                         delay: 0.9,
-                        y: '0%',
+                        y: '-250%',
                         rotationZ: -45,
                         force3D: !0,
                         ease: Quad.easeInOut
@@ -910,16 +1317,18 @@ var mousewheelevt = /Firefox/i.test(navigator.userAgent) ? 'DOMMouseScroll' : 'w
                     values: {
                         css:{color:'#ff5745'}
                     },
-                    title:'EXCITE',
+                    title:'excite',
                     number:'02',
                     verticalOne:'14 DAYS',
-                    verticalTwo:'UNTIL THE FINAL'
+                    verticalTwo:'UNTIL THE FINAL',
+                    first:'There are now 14 days to go, so we begin to',
+                    last:'increase the anticipation for the cup final.'
                 },
                 iPhone: {
                     duration: 0.7,
                     values: {
                         delay: 0,
-                        y: iPhoneTransVal+20,
+                        y: '-40%',
                         rotationZ: 0,
                         force3D: !0,
                         ease: Quad.easeOut
@@ -929,7 +1338,7 @@ var mousewheelevt = /Firefox/i.test(navigator.userAgent) ? 'DOMMouseScroll' : 'w
                     duration: 0.8,
                     values: {
                         delay: 0.9,
-                        y: iPhoneTransVal,
+                        y: '-350%',
                         force3D: !0,
                         ease: Quad.easeInOut
                     }
@@ -958,13 +1367,9 @@ var mousewheelevt = /Firefox/i.test(navigator.userAgent) ? 'DOMMouseScroll' : 'w
                         force3D: !0,
                         ease: Quad.easeInOut
                     }
-                },
-                video: {
-                    start: 27.5,
-                    end: video.duration
                 }
             }, 
-            trValues[5] = {
+            trValues[8] = {
                 stripe: {
                     duration: 0.5,
                     values: {
@@ -991,14 +1396,14 @@ var mousewheelevt = /Firefox/i.test(navigator.userAgent) ? 'DOMMouseScroll' : 'w
                     duration: 0.9,
                     values: {
                         delay: 0.9,
-                        y: 0,
+                        y:'-350%',
                     },
                 },
                 wideContent: {
                     duration: 0.8,
                     values: {
                         delay: 0.9,
-                        y:'174%',
+                        y:'-36%',
                         rotationZ: 0,
                         force3D: !0,
                         ease: Quad.easeInOut
@@ -1007,18 +1412,20 @@ var mousewheelevt = /Firefox/i.test(navigator.userAgent) ? 'DOMMouseScroll' : 'w
                 sliderTitles: {
                     duration: 0.5,
                     values: {
-                        css:{color:'#ff3b20'}
+                        color:'#ff3b20'
                     },
-                    title:'EXCITE',
+                    title:'excite',
                     number:'02',
                     verticalOne:'14 DAYS',
-                    verticalTwo:'UNTIL THE FINAL'
+                    verticalTwo:'UNTIL THE FINAL',
+                    first:'There are now 14 days to go, so we begin to',
+                    last:'increase the anticipation for the cup final.'
                 },
                 iPhone: {
                     duration: 0.7,
                     values: {
                         delay: 0,
-                        y: 2 * -wH,
+                        y: '150%',
                         rotationZ: 15,
                         force3D: !0,
                         ease: Sine.easeIn
@@ -1028,294 +1435,7 @@ var mousewheelevt = /Firefox/i.test(navigator.userAgent) ? 'DOMMouseScroll' : 'w
                     duration: 0.8,
                     values: {
                         delay: 0.9,
-                        y: iPhoneTransVal,
-                        force3D: !0,
-                        ease: Quad.easeInOut
-                    }
-                },
-                article: {
-                    delay: {
-                        forward: 0,
-                        backward: 0
-                    }
-                },
-                timelineCtn: {
-                    duration: 0.5,
-                    values: {
-                        delay: 0,
-                        y: 0,
-                        scaleX: 0,
-                        opacity: 0,
-                        force3D: !0,
-                        ease: Quad.easeInOut
-                    }
-                },
-                timeline: {
-                    duration: 0.5,
-                    values: {
-                        delay: 0,
-                        x: '100%',
-                        force3D: !0,
-                        ease: Quad.easeInOut
-                    }
-                }
-            },
-            trValues[6] = {
-                stripe: {
-                    duration: 0.5,
-                    values: {
-                        backgroundColor:'#ff5745',
-                        delay: 0,
-                        y: 0,
-                        rotationZ: 0,
-                        scaleY: 5,
-                        force3D: !0,
-                        ease: Quad.easeInOut,
-                    },
-                    returns: {                        
-                        backgroundColor:'#ff5745',
-                        delay: 2,
-                        y: 0,
-                        rotationZ: 0,
-                        scaleX: 1,
-                        force3D: !0,
-                        ease: Quad.easeInOut
-                    }
-                },
-                wideContent: {
-                    duration: 0.8,
-                    values: {
-                        delay: 0.9,
-                        y:'174%',
-                        rotationZ: 0,
-                        force3D: !0,
-                        ease: Quad.easeInOut
-                    }
-                },
-                dayScreens: {
-                    duration: 0.9,
-                    values: {
-                        delay: 0.9,
-                        y: '0%'
-                    },
-                },
-                sliderTitles: {
-                    duration: 0.5,
-                    values: {
-                        color:'#ff3b20'
-                    },
-                    title:'EXCITE',
-                    number:'02',
-                    verticalOne:'14 DAYS',
-                    verticalTwo:'UNTIL THE FINAL'
-                },
-                iPhone: {
-                    duration: 0.7,
-                    values: {
-                        delay: 0,
-                        y: 2 * -wH,
-                        rotationZ: 15,
-                        force3D: !0,
-                        ease: Sine.easeIn
-                    }
-                },
-                largeScreen: {
-                    duration: 0.8,
-                    values: {
-                        delay: 0.9,
-                        y: iPhoneTransVal,
-                        force3D: !0,
-                        ease: Quad.easeInOut
-                    }
-                },
-                article: {
-                    delay: {
-                        forward: 0,
-                        backward: 0
-                    }
-                },
-                timelineCtn: {
-                    duration: 0.5,
-                    values: {
-                        delay: 0,
-                        y: 0,
-                        scaleX: 0,
-                        opacity: 0,
-                        force3D: !0,
-                        ease: Quad.easeInOut
-                    }
-                },
-                timeline: {
-                    duration: 0.5,
-                    values: {
-                        delay: 0,
-                        x: '100%',
-                        force3D: !0,
-                        ease: Quad.easeInOut
-                    }
-                }
-            },
-            trValues[7] = {
-                stripe: {
-                    duration: 0.5,
-                    values: {
-                        backgroundColor:'#43db84',top:0,height:5000,
-                        delay: 0,
-                        y:0,
-                        rotationZ: 0,
-                        scaleY: 5,
-                        force3D: !0,
-                        ease: Quad.easeInOut,
-                    },
-                    returns: {                        
-                        backgroundColor:'#43db84',top:'60%',
-                        delay: 1,
-                        y:0,
-                        rotationZ: 0,
-                        scaleX: 1,
-                        force3D: !0,
-                        ease: Quad.easeInOut
-                    }
-                },
-                dayScreens: {
-                    duration: 0.9,
-                    values: {
-                        delay: 0.9,
-                        y:'214%'
-                    },
-                },
-                wideContent: {
-                    duration: 0.8,
-                    values: {
-                        delay: 0.9,
-                        y:'0%',
-                        rotationZ: 0,
-                        force3D: !0,
-                        ease: Quad.easeInOut
-                    }
-                },
-                sliderTitles: {
-                    duration: 0.5,
-                    values: {
-                        color:'#43db84'
-                    },
-                    title:'ACTIVATE',
-                    number:'03',
-                    verticalOne:'EVENT',
-                    verticalTwo:'DAY'
-                },
-                iPhone: {
-                    duration: 0.7,
-                    values: {
-                        delay: 0,
-                        y: 2 * -wH,
-                        rotationZ: 15,
-                        force3D: !0,
-                        ease: Sine.easeIn
-                    }
-                },
-                largeScreen: {
-                    duration: 0.8,
-                    values: {
-                        delay: 0.9,
-                        y: iPhoneTransVal,
-                        force3D: !0,
-                        ease: Quad.easeInOut
-                    }
-                },
-                article: {
-                    delay: {
-                        forward: 2,
-                        backward: 2
-                    }
-                },
-                timelineCtn: {
-                    duration: 0.5,
-                    values: {
-                        delay: 0,
-                        y: 0,
-                        scaleX: 0,
-                        opacity: 0,
-                        force3D: !0,
-                        ease: Quad.easeInOut
-                    }
-                },
-                timeline: {
-                    duration: 0.5,
-                    values: {
-                        delay: 0,
-                        x: '100%',
-                        force3D: !0,
-                        ease: Quad.easeInOut
-                    }
-                }
-            },
-            trValues[8] = {
-                stripe: {
-                    duration: 0.5,
-                    values: {
-                        backgroundColor:'#7543db',top:0,height:5000,
-                        delay: 0,
-                        y: 0,
-                        rotationZ: 0,
-                        scaleY: 5,
-                        force3D: !0,
-                        ease: Quad.easeInOut,
-                    },
-                    returns: {                        
-                        backgroundColor:'#7543db',
-                        top:'60%',
-                        delay: 1,
-                        y: 0,
-                        rotationZ: 0,
-                        scaleX: 1,
-                        force3D: !0,
-                        ease: Quad.easeInOut
-                    }
-                },
-                dayScreens: {
-                    duration: 0.9,
-                    values: {
-                        delay: 0.9,
-                        y:'0%'
-                    }
-                },
-                wideContent: {
-                    duration: 0.8,
-                    values: {
-                        delay: 0.9,
-                        y:'174%',
-                        rotationZ: 0,
-                        force3D: !0,
-                        ease: Quad.easeInOut
-                    }
-                },
-                sliderTitles: {
-                    duration: 0.5,
-                    values: {
-                        css:{color:'#7543db'},
-                        delay:1
-                    },
-                    title:'POST-EVENT',
-                    number:'04',
-                    verticalOne:'POST',
-                    verticalTwo:'EVENT'
-                },
-                iPhone: {
-                    duration: 0.7,
-                    values: {
-                        delay: 0,
-                        y: 2 * -wH,
-                        rotationZ: 15,
-                        force3D: !0,
-                        ease: Sine.easeIn
-                    }
-                },
-                largeScreen: {
-                    duration: 0.8,
-                    values: {
-                        delay: 0.9,
-                        y: iPhoneTransVal,
+                        y: '-350%',
                         force3D: !0,
                         ease: Quad.easeInOut
                     }
@@ -1351,45 +1471,58 @@ var mousewheelevt = /Firefox/i.test(navigator.userAgent) ? 'DOMMouseScroll' : 'w
                 stripe: {
                     duration: 0.5,
                     values: {
-                        delay: 0.2,
-                        y:0,
-                        rotationZ: 0,
-                        force3D: !0,
-                        ease: Sine.easeIn,
-                        backgroundColor:'#7543db'
-                    }
-                },
-                dayScreens: {
-                    duration: 0,
-                    values: {
+                        backgroundColor:'#ff5745',
+                        delay: 0,
                         y: 0,
+                        rotationZ: 0,
+                        scaleY: 5,
+                        force3D: !0,
+                        ease: Quad.easeInOut,
                     },
+                    returns: {                        
+                        backgroundColor:'#ff5745',
+                        delay: 2,
+                        y: 0,
+                        rotationZ: 0,
+                        scaleX: 1,
+                        force3D: !0,
+                        ease: Quad.easeInOut
+                    }
                 },
                 wideContent: {
                     duration: 0.8,
                     values: {
                         delay: 0.9,
-                        y:'174%',
+                        y:'-36%',
                         rotationZ: 0,
                         force3D: !0,
                         ease: Quad.easeInOut
                     }
                 },
+                dayScreens: {
+                    duration: 0.9,
+                    values: {
+                        delay: 0.9,
+                        y:'-350%',
+                    },
+                },
                 sliderTitles: {
                     duration: 0.5,
                     values: {
-                        color:'#7543db'
+                        color:'#ff3b20'
                     },
-                    title:'POST-EVENT',
-                    number:'04',
-                    verticalOne:'POST',
-                    verticalTwo:'EVENT'
+                    title:'excite',
+                    number:'02',
+                    verticalOne:'14 DAYS',
+                    verticalTwo:'UNTIL THE FINAL',
+                    first:'There are now 14 days to go, so we begin to',
+                    last:'increase the anticipation for the cup final.'
                 },
                 iPhone: {
                     duration: 0.7,
                     values: {
                         delay: 0,
-                        y: 2 * -wH,
+                        y: '150%',
                         rotationZ: 15,
                         force3D: !0,
                         ease: Sine.easeIn
@@ -1399,7 +1532,7 @@ var mousewheelevt = /Firefox/i.test(navigator.userAgent) ? 'DOMMouseScroll' : 'w
                     duration: 0.8,
                     values: {
                         delay: 0.9,
-                        y: iPhoneTransVal,
+                        y: '-350%',
                         force3D: !0,
                         ease: Quad.easeInOut
                     }
@@ -1435,25 +1568,36 @@ var mousewheelevt = /Firefox/i.test(navigator.userAgent) ? 'DOMMouseScroll' : 'w
                 stripe: {
                     duration: 0.5,
                     values: {
-                        delay: 0.2,
+                        backgroundColor:'#43db84',top:0,height:5000,
+                        delay: 0,
                         y:0,
                         rotationZ: 0,
+                        scaleY: 5,
                         force3D: !0,
-                        ease: Sine.easeIn,
-                        backgroundColor:'#7543db'
+                        ease: Quad.easeInOut,
+                    },
+                    returns: {                        
+                        backgroundColor:'#43db84',top:'60%',
+                        delay: 1,
+                        y:0,
+                        rotationZ: 0,
+                        scaleX: 1,
+                        force3D: !0,
+                        ease: Quad.easeInOut
                     }
                 },
                 dayScreens: {
-                    duration: 0,
+                    duration: 0.9,
                     values: {
-                        y:'0%',
+                        delay: 0.9,
+                        y:'-50%',
                     },
                 },
                 wideContent: {
                     duration: 0.8,
                     values: {
                         delay: 0.9,
-                        y:'174%',
+                        y:'-250%',
                         rotationZ: 0,
                         force3D: !0,
                         ease: Quad.easeInOut
@@ -1462,18 +1606,20 @@ var mousewheelevt = /Firefox/i.test(navigator.userAgent) ? 'DOMMouseScroll' : 'w
                 sliderTitles: {
                     duration: 0.5,
                     values: {
-                        color:'#7543db'
+                        color:'#43db84'
                     },
-                    title:'POST-EVENT',
-                    number:'04',
-                    verticalOne:'POST',
-                    verticalTwo:'EVENT'
+                    title:'activate',
+                    number:'03',
+                    verticalOne:'EVENT',
+                    verticalTwo:'DAY',
+                    first:'There are now 14 days to go, so we begin to',
+                    last:'increase the anticipation for the cup final.'
                 },
                 iPhone: {
                     duration: 0.7,
                     values: {
                         delay: 0,
-                        y: 2 * -wH,
+                        y: '150%',
                         rotationZ: 15,
                         force3D: !0,
                         ease: Sine.easeIn
@@ -1483,7 +1629,106 @@ var mousewheelevt = /Firefox/i.test(navigator.userAgent) ? 'DOMMouseScroll' : 'w
                     duration: 0.8,
                     values: {
                         delay: 0.9,
-                        y: iPhoneTransVal,
+                        y: '-350%',
+                        force3D: !0,
+                        ease: Quad.easeInOut
+                    }
+                },
+                article: {
+                    delay: {
+                        forward: 2,
+                        backward: 2
+                    }
+                },
+                timelineCtn: {
+                    duration: 0.5,
+                    values: {
+                        delay: 0,
+                        y: 0,
+                        scaleX: 0,
+                        opacity: 0,
+                        force3D: !0,
+                        ease: Quad.easeInOut
+                    }
+                },
+                timeline: {
+                    duration: 0.5,
+                    values: {
+                        delay: 0,
+                        x: '100%',
+                        force3D: !0,
+                        ease: Quad.easeInOut
+                    }
+                }
+            },
+            trValues[11] = {
+                stripe: {
+                    duration: 0.5,
+                    values: {
+                        backgroundColor:'#7543db',top:0,height:5000,
+                        delay: 0,
+                        y: 0,
+                        rotationZ: 0,
+                        scaleY: 5,
+                        force3D: !0,
+                        ease: Quad.easeInOut,
+                    },
+                    returns: {                        
+                        backgroundColor:'#7543db',
+                        top:'60%',
+                        delay: 1,
+                        y: 0,
+                        rotationZ: 0,
+                        scaleX: 1,
+                        force3D: !0,
+                        ease: Quad.easeInOut
+                    }
+                },
+                dayScreens: {
+                    duration: 0.9,
+                    values: {
+                        delay: 0.9,
+                        y:'-350%',
+                    },
+                },
+                wideContent: {
+                    duration: 0.8,
+                    values: {
+                        delay: 0.9,
+                        y:'-36%',
+                        rotationZ: 0,
+                        force3D: !0,
+                        ease: Quad.easeInOut
+                    }
+                },
+                sliderTitles: {
+                    duration: 0.5,
+                    values: {
+                        css:{color:'#7543db'},
+                        delay:1
+                    },
+                    title:'post-event',
+                    number:'04',
+                    verticalOne:'POST',
+                    verticalTwo:'EVENT',
+                    first:'There are now 14 days to go, so we begin to',
+                    last:'increase the anticipation for the cup final.'
+                },
+                iPhone: {
+                    duration: 0.7,
+                    values: {
+                        delay: 0,
+                        y: '150%',
+                        rotationZ: 15,
+                        force3D: !0,
+                        ease: Sine.easeIn
+                    }
+                },
+                largeScreen: {
+                    duration: 0.8,
+                    values: {
+                        delay: 0.9,
+                        y: '-350%',
                         force3D: !0,
                         ease: Quad.easeInOut
                     }
@@ -1513,35 +1758,371 @@ var mousewheelevt = /Firefox/i.test(navigator.userAgent) ? 'DOMMouseScroll' : 'w
                         force3D: !0,
                         ease: Quad.easeInOut
                     }
+                },
+                videoThree: {
+                    start:0,
+                    end:8
                 }
-            };
-        },
-        TabletScroll: function() {
-            this.init = function() {
-                touchmoveDisabled = !0, $(document).on('touchend', App.initiPadVideo), 
-                $(document).swipe({
-                    threshold: 100,
-                    allowPageScroll: 'none',
-                    swipeUp: function() {
-                        !transitioning && currentSection < sections.length - 1 && (transitioning = !0, currentSection++, forward = !0, sections[currentSection].animate(forward));
-                    },
-                    swipeDown: function() {
-                        !transitioning && currentSection > 0 && (transitioning = !0, currentSection--, forward = !1, sections[currentSection].animate(forward));
+            },
+            trValues[12] = {
+                stripe: {
+                    duration: 0.5,
+                    values: {
+                        delay: 0.2,
+                        y:0,
+                        rotationZ: 0,
+                        force3D: !0,
+                        ease: Sine.easeIn,
+                        backgroundColor:'#7543db'
                     }
-                });
-            }, this.kill = function() {
-                touchmoveDisabled = !1, 
-                $(document).swipe('destroy');
+                },
+                dayScreens: {
+                    duration: 0,
+                    values: {
+                        y:'-350%',
+                    },
+                },
+                wideContent: {
+                    duration: 0.8,
+                    values: {
+                        delay: 0.9,
+                        y:'-350%',
+                        rotationZ: 0,
+                        force3D: !0,
+                        ease: Quad.easeInOut
+                    }
+                },
+                sliderTitles: {
+                    duration: 0.5,
+                    values: {
+                        color:'#7543db'
+                    },
+                    title:'post-event',
+                    number:'04',
+                    verticalOne:'POST',
+                    verticalTwo:'EVENT',
+                    first:'There are now 14 days to go, so we begin to',
+                    last:'increase the anticipation for the cup final.'
+                },
+                iPhone: {
+                    duration: 0.7,
+                    values: {
+                        delay: 0,
+                        y: '-40%',
+                        rotationZ: 0,
+                        force3D: !0,
+                        ease: Sine.easeIn
+                    }
+                },
+                largeScreen: {
+                    duration: 0.8,
+                    values: {
+                        delay: 0.9,
+                        y: '-350%',
+                        force3D: !0,
+                        ease: Quad.easeInOut
+                    }
+                },
+                article: {
+                    delay: {
+                        forward: 0,
+                        backward: 0
+                    }
+                },
+                timelineCtn: {
+                    duration: 0.5,
+                    values: {
+                        delay: 0,
+                        y: 0,
+                        scaleX: 0,
+                        opacity: 0,
+                        force3D: !0,
+                        ease: Quad.easeInOut
+                    }
+                },
+                timeline: {
+                    duration: 0.5,
+                    values: {
+                        delay: 0,
+                        x: '100%',
+                        force3D: !0,
+                        ease: Quad.easeInOut
+                    }
+                },
+                imageAnimate: {
+                    img: '4',
+                    duration: 0.5,
+                    values: {
+                        delay: 0,
+
+                    }
+                }
+            },
+            trValues[13] = {
+                stripe: {
+                    duration: 0.5,
+                    values: {
+                        delay: 0.2,
+                        y:0,
+                        rotationZ: 0,
+                        force3D: !0,
+                        ease: Sine.easeIn,
+                        backgroundColor:'#7543db'
+                    }
+                },
+                dayScreens: {
+                    duration: 0,
+                    values: {
+                        y:'-350%',
+                    },
+                },
+                wideContent: {
+                    duration: 0.8,
+                    values: {
+                        delay: 0.9,
+                        y:'-350%',
+                        rotationZ: 0,
+                        force3D: !0,
+                        ease: Quad.easeInOut
+                    }
+                },
+                sliderTitles: {
+                    duration: 0.5,
+                    values: {
+                        color:'#7543db'
+                    },
+                    title:'post-event',
+                    number:'04',
+                    verticalOne:'POST',
+                    verticalTwo:'EVENT',
+                    first:'There are now 14 days to go, so we begin to',
+                    last:'increase the anticipation for the cup final.'
+                },
+                iPhone: {
+                    duration: 0.7,
+                    values: {
+                        delay: 0,
+                        y: '-40%',
+                        rotationZ: 0,
+                        force3D: !0,
+                        ease: Sine.easeIn
+                    }
+                },
+                largeScreen: {
+                    duration: 0.8,
+                    values: {
+                        delay: 0.9,
+                        y: '-350%',
+                        force3D: !0,
+                        ease: Quad.easeInOut
+                    }
+                },
+                article: {
+                    delay: {
+                        forward: 0,
+                        backward: 0
+                    }
+                },
+                timelineCtn: {
+                    duration: 0.5,
+                    values: {
+                        delay: 0,
+                        y: 0,
+                        scaleX: 0,
+                        opacity: 0,
+                        force3D: !0,
+                        ease: Quad.easeInOut
+                    }
+                },
+                timeline: {
+                    duration: 0.5,
+                    values: {
+                        delay: 0,
+                        x: '100%',
+                        force3D: !0,
+                        ease: Quad.easeInOut
+                    }
+                },
+                imageAnimate: {
+                    img: '5',
+                    duration: 0.5,
+                    values: {
+                        delay: 0,
+
+                    }
+                }
+            },
+            trValues[14] = {
+                stripe: {
+                    duration: 0.5,
+                    values: {
+                        delay: 0.2,
+                        y:0,
+                        rotationZ: 0,
+                        force3D: !0,
+                        ease: Sine.easeIn,
+                        backgroundColor:'#7543db'
+                    }
+                },
+                dayScreens: {
+                    duration: 0,
+                    values: {
+                        y:'-350%',
+                    },
+                },
+                wideContent: {
+                    duration: 0.8,
+                    values: {
+                        delay: 0.9,
+                        y:'-350%',
+                        rotationZ: 0,
+                        force3D: !0,
+                        ease: Quad.easeInOut
+                    }
+                },
+                sliderTitles: {
+                    duration: 0.5,
+                    values: {
+                        color:'#7543db'
+                    },
+                    title:'post-event',
+                    number:'04',
+                    verticalOne:'POST',
+                    verticalTwo:'EVENT',
+                    first:'There are now 14 days to go, so we begin to',
+                    last:'increase the anticipation for the cup final.'
+                },
+                iPhone: {
+                    duration: 0.7,
+                    values: {
+                        delay: 0,
+                        y: '-40%',
+                        rotationZ: 0,
+                        force3D: !0,
+                        ease: Sine.easeIn
+                    }
+                },
+                largeScreen: {
+                    duration: 0.8,
+                    values: {
+                        delay: 0.9,
+                        y: '-350%',
+                        force3D: !0,
+                        ease: Quad.easeInOut
+                    }
+                },
+                article: {
+                    delay: {
+                        forward: 0,
+                        backward: 0
+                    }
+                },
+                timelineCtn: {
+                    duration: 0.5,
+                    values: {
+                        delay: 0,
+                        y: 0,
+                        scaleX: 0,
+                        opacity: 0,
+                        force3D: !0,
+                        ease: Quad.easeInOut
+                    }
+                },
+                timeline: {
+                    duration: 0.5,
+                    values: {
+                        delay: 0,
+                        x: '100%',
+                        force3D: !0,
+                        ease: Quad.easeInOut
+                    }
+                },
+                imageAnimate: {
+                    img: '6',
+                    duration: 0.5,
+                    values: {
+                        delay: 0,
+
+                    }
+                }
             };
 
         },
+        initSlider: function() {
+            /* jshint expr: true */
+
+            $('#sections-list section p,#sections-list section h2').addClass('white'),
+            $('#sections-list section .fifty').removeClass('top-pad-s'),
+            $('#sections-list section').eq(0).addClass('current'), 
+            $('#slider-nav li').eq(0).addClass('current'), 
+            this.slider = $('.swiper-container').swiper({
+                direction: 'horizontal',
+                speed: 700,
+                autoResize: !0,
+                resistanceRatio: 0.7,
+                longSwipesRatio: 0,
+                spaceBetween: 0,
+                onInit: function(e) {
+                    lastSwipeProgress = e.progress;
+                },
+                onTransitionStart: function(e) {
+                    $body.removeClass('slide-change');
+                },
+                onProgress: function(e, t) {
+                    //console.log(e,t);
+                    App.rotateSlide(e, t), 
+                    $body.addClass('slide-change');
+                },
+                onSlideChangeEnd: function(e) {
+                    var getActiveIndex = $('.swiper-slide-active').index();
+                    $body.attr('data-current-section',getActiveIndex);
+                    lastSwipeProgress = e.progress,
+                    $('#sections-list section').removeClass('current').eq(e.activeIndex).addClass('current'), 
+                    $('#slider-nav li').removeClass('current').eq(e.activeIndex).addClass('current');
+                    var bData = $body.attr('data-current-section'),
+                        titles = $('#titles');
+                    if(bData >= 0 && bData <= 4) {
+                        titles.removeClass();
+                        titles.addClass('blue');
+                        titles.find('h3 span').text('01');
+                    }
+                    if(bData >= 5 && bData <= 9) {
+                        titles.removeClass();
+                        titles.addClass('orange');
+                        titles.find('h3 span').text('02');
+                    }
+                    if(bData >= 10 && bData <= 10) {
+                        console.log(bData);
+                        titles.removeClass();
+                        titles.addClass('green');
+                        titles.find('h3 span').text('03');
+                    }
+                    if(bData >= 11 && bData <= 14) {
+                        titles.removeClass();
+                        titles.addClass('purple');
+                        titles.find('h3 span').text('04');
+                    }
+                }
+            }), 
+            slidesNumber = $('.swiper-slide').length, 
+            $(document).on('click touchend', '#slider-nav a', function(e) {
+                e.preventDefault();
+            });
+        },
         rotateSlide: function(e, t) {
+                        /* jshint expr: true */
+
+            //console.log('rotate motherf', e, t);
             var i, n = lastSwipeProgress - t,
                 r = n * (slidesNumber - 1),
                 s = $('#slider-images span').eq(e.activeIndex),
                 a = $('#slider-images span').eq(0 > n ? e.activeIndex + 1 : e.activeIndex - 1),
                 o = Math.min(90, 90 * r);
-            r >= 0 ? i = Math.max(-90, -90 + 90 * r) : 0 > r && (i = Math.min(90, 90 - -90 * r)), 
+            r >= 0 ? i = Math.max(-90, -90 + 90 * r) : 0 > r && (i = Math.min(90, 90 - -90 * r)),
+            //console.log('lastSwipeProgress',lastSwipeProgress,'slidesNumber: ',slidesNumber, 'n: ',n,'e: ',e,'i: ',i,'a: ',a,'o: ',o,'s: ',s,'t: ',t),
+            o = Math.round(o * 100) / 100,
+            i = Math.round(i * 100) / 100,
+            console.log('O: ',o,'I: ',i),
             s.css({
                 transform: 'rotate(' + o + 'deg)'
             }), 
@@ -1549,12 +2130,55 @@ var mousewheelevt = /Firefox/i.test(navigator.userAgent) ? 'DOMMouseScroll' : 'w
                 transform: 'rotate(' + i + 'deg)'
             }), 
             lastViableProgress = t;
+        },
+        initiPadVideo: function() {
+            video.play(), 
+            video.pause(), 
+            console.log('iPad video initiated.'), 
+            $(document).off('touchend', App.initiPadVideo);
         }
 
 
 	};
 
+    var playVideoTwo = function() {
+        console.log(videoTwo),
+        playVideoTwo = function(){},//kill function to call just once.
+        videoTwo.play(); 
+    };
 
+    function TabletScroll() {
+        /* jshint expr: true */
+
+        this.init = function() {
+            console.log('TabletScroll');
+            touchmoveDisabled = !0, 
+            $(document).on('touchend', App.initiPadVideo), 
+            $(document).swipe({
+                threshold: 100,
+                allowPageScroll: 'none',
+                swipeUp: function() {
+                    console.log('swipeUp'),
+                    !transitioning && currentSection < sections.length - 1 && (transitioning = !0, 
+                    currentSection++, 
+                    forward = !0, 
+                    sections[currentSection].animate(forward));
+                },
+                swipeDown: function() {
+                    console.log('swipeDown'),
+                    !transitioning && currentSection > 0 && (transitioning = !0, 
+                    currentSection--, 
+                    forward = !1, 
+                    sections[currentSection].animate(forward));
+                }
+            });
+        }, 
+        this.kill = function() {
+            touchmoveDisabled = !1, 
+            $(document).swipe('destroy');
+        };
+    }
 
 
 })(jQuery, window, document);
+
