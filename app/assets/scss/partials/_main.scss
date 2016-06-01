@@ -71,7 +71,7 @@ video {
 	            width:100%;
 	            max-width:100%;
 		@include breakpoint(mobileonly) {
-	            top: 20%;
+				top: 20%;
 		}
 	}
 	h1 {
@@ -96,6 +96,12 @@ video {
 		}
 		@include breakpoint(laptop) {
 			transform: scale(1);
+		}
+		@include breakpoint(tallwide) {
+			transform: scale(1.5);
+		}
+		@include breakpoint(widescreen) {
+		    transform: scale(1);		
 		}
 	}
 }

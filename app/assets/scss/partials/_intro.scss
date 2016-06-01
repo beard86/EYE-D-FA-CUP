@@ -9,11 +9,15 @@
 	h1 {
 		max-width: 600px;
 		margin:0 auto;
+		@include breakpoint(mobileonly) {
+		    font-size: 1.4em;
+			margin-bottom: 10%;
+		}
 	}
 	.main-content {
 		max-width:600px;
 		@include breakpoint(mobileonly) {
-			padding: 50px 60px 50px;
+			padding: 50px 40px 50px;
 		}
 		@include breakpoint(phablet) {
 			max-width: 96%;
@@ -25,10 +29,13 @@
 		>img {
 			width:100%;
 			@include breakpoint(mobileonly) {
-				width:90%
+				width:100%
 			}
 			@include breakpoint(desktop) {
 				width:33.333%
+			}
+			@include breakpoint(tallwide) {
+				width: 63.333%;
 			}
 			@include breakpoint(widescreen) {
 				width:68%;

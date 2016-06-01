@@ -30,6 +30,9 @@ BREAKPOINTS
    @if $point == widescreen {
      @media (min-width: 120.063em) { @content ; }
   }
+  @else if $point == tallwide {
+    @media (min-width: 50em) and (min-height: 60em) { @content ; }
+  }
    @else if $point == desktop {
      @media (min-width: 70em) { @content ; }
   }

@@ -3,14 +3,14 @@
         @include breakpoint(mobileonly) {
                 height:calc(100vh - 50px)!important;
                 height:100vh!important;
-                margin-top: -30px;
+                //margin-top: -30px;
                 padding-top: 30px;
         }
         @include breakpoint(phablet) {
-            padding-top: 5%;
+            padding-top: 52px;
         }
         @include breakpoint(laptop) {
-            padding-top: 0;
+           // padding-top: 0;
         }
     .heading {
         display: inline-block;
@@ -107,7 +107,10 @@
                         }
                     }
                 }
-                &.red {
+                &.orange {
+                    @include breakpoint(mobileonly){
+                            color:$white;
+                    }
                     &.keep-white {
                         @include breakpoint(phablet){
                             color:$white;
@@ -121,6 +124,9 @@
 
                 }
                 &.green {
+                    @include breakpoint(mobileonly){
+                            color:$white;
+                    }
                     &.keep-white {
                         @include breakpoint(phablet){
                             color:$white;
@@ -133,7 +139,26 @@
                     }
 
                 }
+                &.blue {
+                    @include breakpoint(mobileonly){
+                            color:$white;
+                    }
+                    &.keep-white {
+                        @include breakpoint(phablet){
+                            color:$white;
+                            text-align: center;
+                        }
+                        @include breakpoint(laptop){
+                            color:$blue;
+                            text-align: left;
+                        }
+                    }
+
+                }
                 &.purple {
+                    @include breakpoint(mobileonly){
+                            color:$white;
+                    }
                     &.keep-white {
                         @include breakpoint(phablet){
                             color:$white;
@@ -194,7 +219,7 @@
             display: none;
         }
         @include breakpoint(phablet) {
-            font-size: 1em;
+            font-size: 0.95em;
         }
         @include breakpoint(widescreen) {
             margin:25px;
@@ -213,19 +238,144 @@
         position: relative;
     }
 }
+body[data-current-section="5"] #sections-list section:before {
+    opacity: 0;
+    -webkit-transform: translate3d(0, -400px, 0);
+    transform: translate3d(0, -400px, 0);
+    transition: .5s 0s cubic-bezier(.25, .46, .45, .94)
+}
+
+
+#sections-list section:before {
+    //content: "0" counter(section);
+    content: ' ';
+    position: absolute;
+    top: calc(50% + 50px);
+    left: calc(50% - 370px);
+    z-index: 30;
+    width: 160px;
+    height: 160px;
+    font-size: 16rem;
+    line-height: 16rem;
+    color: #fff;
+    opacity: 0;
+    -webkit-transform: translate3d(160px, 0, 0);
+    transform: translate3d(160px, 0, 0);
+    transition: .4s cubic-bezier(.55, .085, .68, .53)
+}
+
+
+#sections-list {
+    @include breakpoint(phablet){
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+
+    }
+}
+#sections-list.rel {
+    position: relative;
+}
+
+#sections-list li {
+    @include breakpoint(phablet){
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+
+    }
+}
+
+#sections-list section.current:before {
+    opacity: 1;
+    -webkit-transform: none;
+    transform: none;
+    //transition: .6s .3s cubic-bezier(.25, .46, .45, .94)
+}
+
+#sections-list section.current article .fifty,
+#sections-list section.current span,
+#sections-list section.current article h2,
+#sections-list section.current article p {
+    opacity: 1;
+    -webkit-transform: none;
+    transform: none;
+   // transition: .6s .1s cubic-bezier(.25, .46, .45, .94)
+}
+
+#sections-list section.current article h2 {
+    transition-delay: 0
+}
+
+#sections-list section.current article p {
+    transition-delay: .2s
+}
 
 //disable transforms for certain text//
-/*body[data-current-section="5"] #sections-list li article h2,
-body[data-current-section="5"] #sections-list li article p,
-body[data-current-section="5"] #sections-list li article .fifty,
-body[data-current-section="6"] #sections-list li article h2,
-body[data-current-section="6"] #sections-list li article p,
-body[data-current-section="5"] #sections-list li article .fifty {
+body[data-current-section="1"] #sections-list li:nth-child(2) article h2,
+body[data-current-section="1"] #sections-list li:nth-child(2) article p,
+body[data-current-section="1"] #sections-list li:nth-child(2) article .fifty,
+body[data-current-section="1"] #sections-list li:nth-child(3) article h2,
+body[data-current-section="1"] #sections-list li:nth-child(3) article p,
+body[data-current-section="1"] #sections-list li:nth-child(3) article .fifty,
+
+body[data-current-section="2"] #sections-list li:nth-child(2) article h2,
+body[data-current-section="2"] #sections-list li:nth-child(2) article p,
+body[data-current-section="2"] #sections-list li:nth-child(2) article .fifty,
+body[data-current-section="2"] #sections-list li:nth-child(3) article h2,
+body[data-current-section="2"] #sections-list li:nth-child(3) article p,
+body[data-current-section="2"] #sections-list li:nth-child(3) article .fifty,
+body[data-current-section="2"] #sections-list li:nth-child(4) article h2,
+body[data-current-section="2"] #sections-list li:nth-child(4) article p,
+body[data-current-section="2"] #sections-list li:nth-child(4) article .fifty,
+
+body[data-current-section="3"] #sections-list li:nth-child(2) article h2,
+body[data-current-section="3"] #sections-list li:nth-child(2) article p,
+body[data-current-section="3"] #sections-list li:nth-child(2) article .fifty,   
+body[data-current-section="3"] #sections-list li:nth-child(3) article h2,
+body[data-current-section="3"] #sections-list li:nth-child(3) article p,
+body[data-current-section="3"] #sections-list li:nth-child(3) article .fifty,   
+body[data-current-section="3"] #sections-list li:nth-child(4) article h2,
+body[data-current-section="3"] #sections-list li:nth-child(4) article p,
+body[data-current-section="3"] #sections-list li:nth-child(4) article .fifty,
+body[data-current-section="3"] #sections-list li:nth-child(5) article h2,
+body[data-current-section="3"] #sections-list li:nth-child(5) article p,
+body[data-current-section="3"] #sections-list li:nth-child(5) article .fifty,
+
+body[data-current-section="4"] #sections-list li:nth-child(3) article h2,
+body[data-current-section="4"] #sections-list li:nth-child(3) article p,
+body[data-current-section="4"] #sections-list li:nth-child(3) article .fifty,   
+body[data-current-section="4"] #sections-list li:nth-child(4) article h2,
+body[data-current-section="4"] #sections-list li:nth-child(4) article p,
+body[data-current-section="4"] #sections-list li:nth-child(4) article .fifty,
+body[data-current-section="4"] #sections-list li:nth-child(5) article h2,
+body[data-current-section="4"] #sections-list li:nth-child(5) article p,
+body[data-current-section="4"] #sections-list li:nth-child(5) article .fifty,
+
+body[data-current-section="9"] #sections-list li:nth-child(10) article h2,
+body[data-current-section="9"] #sections-list li:nth-child(10) article p,
+body[data-current-section="9"] #sections-list li:nth-child(10) article .fifty,
+body[data-current-section="12"] #sections-list li:nth-child(13) article h2,
+body[data-current-section="12"] #sections-list li:nth-child(13) article p,
+body[data-current-section="12"] #sections-list li:nth-child(13) article .fifty,
+body[data-current-section="13"] #sections-list li:nth-child(14) article h2,
+body[data-current-section="13"] #sections-list li:nth-child(14) article p,
+body[data-current-section="13"] #sections-list li:nth-child(14) article .fifty,
+body[data-current-section="14"] #sections-list li:nth-child(15) article h2,
+body[data-current-section="14"] #sections-list li:nth-child(15) article p,
+body[data-current-section="14"] #sections-list li:nth-child(15) article .fifty 
+{
     -webkit-transform:none;
     transform: none;
     -webkit-transition:none;
     transition: none;
-}*/
+    opacity: 1;
+}
+
 body[data-current-section="5" ],
 body[data-current-section="6" ],
 body[data-current-section="7" ],
@@ -319,82 +469,6 @@ body[data-current-section="10" ] {
             }
     }
 }
-body[data-current-section="5"] #sections-list section:before {
-    opacity: 0;
-    -webkit-transform: translate3d(0, -400px, 0);
-    transform: translate3d(0, -400px, 0);
-    transition: .5s 0s cubic-bezier(.25, .46, .45, .94)
-}
-
-
-#sections-list section:before {
-    //content: "0" counter(section);
-    content: ' ';
-    position: absolute;
-    top: calc(50% + 50px);
-    left: calc(50% - 370px);
-    z-index: 30;
-    width: 160px;
-    height: 160px;
-    font-size: 16rem;
-    line-height: 16rem;
-    color: #fff;
-    opacity: 0;
-    -webkit-transform: translate3d(160px, 0, 0);
-    transform: translate3d(160px, 0, 0);
-    transition: .4s cubic-bezier(.55, .085, .68, .53)
-}
-
-
-#sections-list {
-    @include breakpoint(phablet){
-        position: absolute;
-        top: 0;
-        right: 0;
-        bottom: 0;
-        left: 0;
-
-    }
-}
-#sections-list.rel {
-    position: relative;
-}
-
-#sections-list li {
-    @include breakpoint(phablet){
-        position: absolute;
-        top: 0;
-        right: 0;
-        bottom: 0;
-        left: 0;
-
-    }
-}
-
-#sections-list section.current:before {
-    opacity: 1;
-    -webkit-transform: none;
-    transform: none;
-    transition: .6s .3s cubic-bezier(.25, .46, .45, .94)
-}
-
-#sections-list section.current article .fifty,
-#sections-list section.current span,
-#sections-list section.current article h2,
-#sections-list section.current article p {
-    opacity: 1;
-    -webkit-transform: none;
-    transform: none;
-    transition: .6s .1s cubic-bezier(.25, .46, .45, .94)
-}
-
-#sections-list section.current article h2 {
-    transition-delay: 0
-}
-
-#sections-list section.current article p {
-    transition-delay: .2s
-}
 //ARTICLE POSITIONING
 #sections-list  {
     li {
@@ -411,14 +485,14 @@ body[data-current-section="5"] #sections-list section:before {
 
             }
             @include breakpoint(laptop) {
-                top: calc(71% - 202px);
+                top: calc(74% - 202px);
                 right: calc(13% - 240px);
                 left: auto;
                 width: 20%;
             }
             @include breakpoint(widescreen) {
                     top: calc(63% - 208px);
-                    right: calc(20% - 340px);
+                    right: calc(17% - 340px);
                     left: auto;
             }
         }
@@ -440,12 +514,15 @@ body[data-current-section="5"] #sections-list section:before {
                     width: 20%;
                 }
                 @include breakpoint(laptop) {
-                    top: calc(60% - 200px);
+                    top: calc(63% - 200px);
                     right:calc(37% - 240px);
                 }
+                @include breakpoint(tallwide) {
+                    right: calc(31% - 240px);
+                }
                 @include breakpoint(widescreen) {
-                        top: calc(63% - 208px);
-                        right: calc(40% - 340px);;
+                        top: calc(60% - 208px);
+                        right: calc(38% - 340px);;
                         left: auto;
                 }
 
@@ -465,7 +542,8 @@ body[data-current-section="5"] #sections-list section:before {
 #sections-list li article.widescreen {
     @include breakpoint(mobileonly){
         top: calc(70% - 33px);
-        right: 6%;
+        right: 50%;
+        transform: translateX(50%);
     }
     .fifty {
         @include breakpoint(mobileonly){
@@ -482,8 +560,8 @@ body[data-current-section="5"] #sections-list section:before {
 #sections-list article h2,
 #sections-list article p {
     opacity: 0;
-    -webkit-transform: translate3d(160px, 0, 0);
-    transform: translate3d(160px, 0, 0);
+    //-webkit-transform: translate3d(160px, 0, 0);
+    //transform: translate3d(160px, 0, 0);
     transition: .4s cubic-bezier(.55, .085, .68, .53)
 }
 

@@ -93,6 +93,9 @@ figure {
 .large {
   font-size: 2.8em;
   font-weight: 700;
+  @include breakpoint(widescreen) {
+    font-size:3.6em;
+  }
 
 }
 .center {
@@ -106,6 +109,9 @@ figure {
 }
 .rel {
   position: relative;
+}
+.fixed {
+  position: fixed;
 }
 .hidden {
   display: none;    
@@ -298,7 +304,7 @@ h1 {
 
 #stripe {
     position: absolute;
-    top:60%;
+    top:65%;
     left: 0;
     z-index: 0;
     width: 100%;
@@ -315,4 +321,7 @@ h1 {
     -webkit-transform: translate3d(0, 0, 0);
     transform: translate3d(0, 0, 0);
     transition: all,0.5s ease-in-out;
+    @include breakpoint(mobileonly) {
+      top:55%;
+    }
 }
