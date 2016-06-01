@@ -17,7 +17,7 @@
     }
     @include breakpoint(laptop) {
 	    width: 16%;
-        //top: 108%;
+        top: 59%;
     }
     @include breakpoint(tallwide) {
        // top: 105%;
@@ -50,7 +50,7 @@
     .image-load {
             padding: 24.5% 9.05% 22.5% 10.05%;
             @include breakpoint(widescreen) {
-                padding:24.5% 10.05% 24.5% 12%;
+                padding:24.5% 11.05%;
             }
 
     }
@@ -140,7 +140,7 @@
 		height: 428px;
 	}
     @include breakpoint(laptop) {
-		top:50%;
+		top:58%;
         width: 43%;
 	    height: 66%;
 	}

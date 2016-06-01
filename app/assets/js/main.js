@@ -57,14 +57,13 @@ var mousewheelevt = /Firefox/i.test(navigator.userAgent) ? 'DOMMouseScroll' : 'w
 		splashFaders:false,
 		init : function() {
 
-			App.eventHandlers();
 			App.setDefaults();
 
 		},
 		setDefaults: function() {
-			App.scrollHandlers();
             App.layoutSettings();
-            
+			App.scrollHandlers();
+            App.eventHandlers();
             //init Navigation
             $('section').each(function(e) {
                 sections[e] = new App.Section(e);
@@ -72,7 +71,14 @@ var mousewheelevt = /Firefox/i.test(navigator.userAgent) ? 'DOMMouseScroll' : 'w
 
 		},
         layoutSettings : function() {
-
+            var links = $('#hero a');
+           /* var tween = TweenMax.to( '#hero a',  1, {
+                y:'-300%', 
+                ease:Linear 
+            },0.5);         */
+            setTimeout(function() {
+                links.css('transform','translateY(0%)');
+            },750);
             //layout Settings
             App.setHeightOther(),
             wW = window.innerWidth, 
@@ -125,7 +131,7 @@ var mousewheelevt = /Firefox/i.test(navigator.userAgent) ? 'DOMMouseScroll' : 'w
 				event.preventDefault();
 				App.goToSection('#intro', 25);
 			});
-            
+
 			$('body').on('click touchend', '#down-intro', function(event){
 				event.preventDefault();
 				App.goToSection('#sliders',-50);
@@ -268,13 +274,13 @@ var mousewheelevt = /Firefox/i.test(navigator.userAgent) ? 'DOMMouseScroll' : 'w
 
 					if (distanceY > shrinkOn) {
 					    classie.add(header,'smaller');
-                        classie.add(headerLogo, 'hidden');
-                        classie.remove(centerTitle, 'center-title');
+                        //classie.add(headerLogo, 'hidden');
+                        //classie.remove(centerTitle, 'center-title');
 					} else {
 					    if (classie.has(header,'smaller')) {
 					        classie.remove(header,'smaller');
-                            classie.remove(headerLogo, 'hidden');
-                            classie.add(centerTitle, 'center-title');
+                            //classie.remove(headerLogo, 'hidden');
+                           // classie.add(centerTitle, 'center-title');
 					    }
 					}
                     if (distanceY > startVideo) {
@@ -282,7 +288,7 @@ var mousewheelevt = /Firefox/i.test(navigator.userAgent) ? 'DOMMouseScroll' : 'w
                     }
                     if (distanceY > bindMouseWheel) {
                         if (wW > 740) {
-                            if(currentSection === 0 && $body.attr('data-started') === 'false' && $body.attr('data-forward') === 'true'){
+                            if(currentSection === 0 && $body.attr('data-started') === 'false' && $body.attr('data-forward') === 'true' || $body.attr('data-restart') === 'true'){
                                 //console.log('mouse wheel bound');
                                 //App.goToSection('#sliders',-50);
                                 $('#sliders').css({'position': 'fixed', 'top': '0px','z-index':'20'})
@@ -317,7 +323,7 @@ var mousewheelevt = /Firefox/i.test(navigator.userAgent) ? 'DOMMouseScroll' : 'w
                     prevscroll = document.body.scrollTop || document.documentElement.scrollTop || 0;
                 };
 
-                downCheck();
+                //downCheck();
 
         },
         mouseWheelHandler: function(e) {
@@ -470,6 +476,9 @@ var mousewheelevt = /Firefox/i.test(navigator.userAgent) ? 'DOMMouseScroll' : 'w
                                 $('#sliders').css({'position': 'relative', 'top': 'auto','z-index':'1'});
                                 $(document).unbind(mousewheelevt, App.mouseWheelHandler);
                                 $body.attr('data-started',false);
+                                setTimeout(function() {
+                                    $body.attr('data-restart',true);
+                                },1000);
                                 return;
                             }
                             if( ($body.attr('data-started') === 'false') && ($body.attr('data-forward') === 'true') && (currentSection === endFrame)) {

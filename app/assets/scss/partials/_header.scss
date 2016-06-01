@@ -17,6 +17,18 @@
     	padding: 10px 20px;
     }
 }
+.title {
+	a {
+		color:$mid-grey;
+		&.active {
+			color:$dark-grey;
+			text-decoration: underline;
+		}
+		&:first-child {
+			margin-right:2%;
+		}
+	}
+}
 .logo {
 	float: left;
 	@include breakpoint(mobileonly) {
@@ -41,7 +53,7 @@
 }
 .center-title {
 	left: 50%;
-	margin-left: -24px;
+	transform: translateX(-50%);
 	@include breakpoint(mobileonly) {
 		left: 0;
 		margin-left: 25px;
